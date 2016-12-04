@@ -14,6 +14,8 @@ import org.hibernate.Transaction;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -22,15 +24,21 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Component
 public class OrderServiceTest {
     public static OrderService orderService;
-    public static OrderDao orderDao;
+    @Autowired
+    public OrderDao orderDao;
+    @Autowired
+    public UserDao userDao;
+    @Autowired
+    public BookDao bookDao;
     public static HttpServletRequest request;
 
     @BeforeClass
     public static void init() {
         orderService = OrderService.getInstance();
-        orderDao = OrderDao.getInstance();
+//        orderDao = OrderDao.getInstance();
         request = mock(HttpServletRequest.class);
     }
 
@@ -73,7 +81,7 @@ public class OrderServiceTest {
 
     @Test
     public void testGetOrdersByLoginAndStatus3() throws DaoException {
-        UsersEntity user = UserDao.getInstance().getById(2);
+        UsersEntity user = userDao.getById(2);
         List<FullOrdersList> list = orderService.getOrdersByLoginAndStatus(request, user.getLogin(), OrderStatus.CLOSED);
         Assert.assertTrue(!list.isEmpty());
     }
@@ -121,7 +129,7 @@ public class OrderServiceTest {
     public void testOrderToHomeOrToRoom4() throws DaoException {
         int startCountOfOrders = getTheLastOrderId();
         int bookId = 0;
-        List<BooksEntity> bookList = BookDao.getInstance().getAbsolutelyAll();
+        List<BooksEntity> bookList = bookDao.getAbsolutelyAll();
         for (BooksEntity book : bookList) {
             if (!book.getIsBusy()) {
                 bookId = book.getBookId();
@@ -129,7 +137,7 @@ public class OrderServiceTest {
             }
         }
         String userLogin = "";
-        List<UsersEntity> userList = UserDao.getInstance().getAbsolutelyAll();
+        List<UsersEntity> userList = userDao.getAbsolutelyAll();
         for (UsersEntity userTemp : userList) {
             if (!userTemp.getIsBlocked() && !userTemp.getIsAdmin()) {
                 userLogin = userTemp.getLogin();
@@ -172,7 +180,7 @@ public class OrderServiceTest {
     public void testProvideBook3() throws DaoException {
         OrdersEntity orderEntity = saveAndGetNewOrderEntity();
         String userLogin = "";
-        List<UsersEntity> userList = UserDao.getInstance().getAbsolutelyAll();
+        List<UsersEntity> userList = userDao.getAbsolutelyAll();
         for (UsersEntity userTemp : userList) {
             if (!userTemp.getIsBlocked() && !userTemp.getIsAdmin()) {
                 userLogin = userTemp.getLogin();
@@ -180,7 +188,7 @@ public class OrderServiceTest {
             }
         }
         int bookId = 0;
-        List<BooksEntity> bookList = BookDao.getInstance().getAbsolutelyAll();
+        List<BooksEntity> bookList = bookDao.getAbsolutelyAll();
         for (BooksEntity book : bookList) {
             if (!book.getIsBusy()) {
                 bookId = book.getBookId();

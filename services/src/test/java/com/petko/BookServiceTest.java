@@ -1,12 +1,15 @@
 package com.petko;
 
 import com.petko.dao.BookDao;
+import com.petko.dao.UserDao;
 import com.petko.entities.BooksEntity;
 import com.petko.entities.UsersEntity;
 import com.petko.services.BookService;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Assert;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,15 +20,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Component
 public class BookServiceTest {
     public static BookService bookService;
-    public static BookDao bookDao;
+    @Autowired
+    public BookDao bookDao;
+    @Autowired
+    public UserDao userDao;
     public static HttpServletRequest request;
 
     @BeforeClass
     public static void init() {
         bookService = BookService.getInstance();
-        bookDao = BookDao.getInstance();
+//        bookDao = BookDao.getInstance();
         request = mock(HttpServletRequest.class);
     }
 
@@ -55,7 +62,7 @@ public class BookServiceTest {
     @Test
     public void testSearchBooksByTitleOrAuthor2() throws DaoException {
         UserServiceTest.init();
-        List<UsersEntity> usersList = UserServiceTest.userDao.getAbsolutelyAll();
+        List<UsersEntity> usersList = userDao.getAbsolutelyAll();
         UsersEntity user = null;
         for (UsersEntity user2 : usersList) {
             if (!user2.getIsAdmin()) {

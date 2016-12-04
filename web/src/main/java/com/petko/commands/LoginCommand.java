@@ -1,16 +1,22 @@
 package com.petko.commands;
 
 import com.petko.constants.Constants;
+import com.petko.services.IUserService;
 import com.petko.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Enumeration;
 
+@Controller
 public class LoginCommand extends AbstractCommand {
     private static LoginCommand instance;
-
+    @Autowired
+    private IUserService userService;
     private LoginCommand() {}
 
     public static synchronized LoginCommand getInstance() {
@@ -34,7 +40,7 @@ public class LoginCommand extends AbstractCommand {
         if (session.getAttribute("user") != null) {
             login = (String) session.getAttribute("user");
             redirectToMainPage(request, login);
-        } else if (!"".equals(login) && UserService.getInstance().isLoginSuccess(request, login, password)) {
+        } else if (!"".equals(login) && userService.isLoginSuccess(request, login, password)) {
             session.setAttribute("user", login);
             redirectToMainPage(request, login);
         } else {

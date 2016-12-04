@@ -2,21 +2,25 @@ package com.petko.services;
 
 import com.petko.DaoException;
 import com.petko.ExceptionsHandler;
-import com.petko.dao.BookDao;
+import com.petko.dao.IBookDao;
 import com.petko.entities.BooksEntity;
 import com.petko.utils.HibernateUtilLibrary;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
-public class BookService {
+@Service
+public class BookService implements IBookService {
     private static BookService instance;
     private static UserService userService = UserService.getInstance();
     private static Logger log = Logger.getLogger(BookService.class);
-    private static BookDao bookDao = BookDao.getInstance();
+    @Autowired
+    private IBookDao bookDao;
     private static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
 
     private BookService() {}

@@ -1,4 +1,4 @@
-package com.petko;
+package com.petko.managers;
 
 import com.petko.commands.Command;
 import com.petko.commands.CommandType;

@@ -5,16 +5,20 @@ import com.petko.entities.UsersEntity;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+@Component
 public class UserDaoTest {
-    public static UserDao userDao;
+    @Autowired
+    private UserDao userDao;
 
-    @BeforeClass
+    /*@BeforeClass
     public static void init() {
         userDao = UserDao.getInstance();
-    }
+    }*/
 
     @Test (expected = DaoException.class)
     public void testSave1() throws DaoException {

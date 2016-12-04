@@ -11,7 +11,7 @@
 <HR>
 <FORM name="loginForm"
       method="POST"
-      action= "controller">
+      action= "controller?cmd=login">
     <INPUT type="hidden" name="cmd" value="login">
     Логин:<BR>
     <INPUT type="text"

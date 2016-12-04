@@ -7,17 +7,21 @@ import com.petko.entities.OrdersEntity;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
 
+@Component
 public class OrderDaoTest {
-    public static OrderDao orderDao;
+    @Autowired
+    public OrderDao orderDao;
 
-    @BeforeClass
+    /*@BeforeClass
     public static void init() {
         orderDao = OrderDao.getInstance();
-    }
+    }*/
 
     @Test (expected = DaoException.class)
     public void testSave1() throws DaoException {

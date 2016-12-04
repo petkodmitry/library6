@@ -12,12 +12,14 @@ import org.hibernate.criterion.CriteriaQuery;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Map;
 
+@Repository
 public class BaseDao<T extends Entity> implements Dao<T> {
     private static Logger log = Logger.getLogger(BaseDao.class);
     protected static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();

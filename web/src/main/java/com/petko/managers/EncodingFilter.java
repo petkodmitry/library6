@@ -1,4 +1,4 @@
-package com.petko;
+package com.petko.managers;
 
 import javax.servlet.*;
 import java.io.IOException;

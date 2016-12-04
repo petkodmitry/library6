@@ -3,6 +3,7 @@ package com.petko.services;
 import com.petko.DaoException;
 import com.petko.ExceptionsHandler;
 import com.petko.constants.Constants;
+import com.petko.dao.ISeminarDao;
 import com.petko.dao.SeminarDao;
 import com.petko.dao.UserDao;
 import com.petko.entities.SeminarsEntity;
@@ -11,15 +12,20 @@ import com.petko.utils.HibernateUtilLibrary;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
-public class SeminarService {
+@Service
+public class SeminarService implements ISeminarService {
     private static SeminarService instance;
     private static Logger log = Logger.getLogger(SeminarService.class);
-    private static SeminarDao seminarDao = SeminarDao.getInstance();
-    private static UserDao userDao = UserDao.getInstance();
+    @Autowired
+    private ISeminarDao seminarDao;
+    @Autowired
+    private UserDao userDao;
     private static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
 
     private SeminarService() {}

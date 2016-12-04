@@ -6,7 +6,9 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
+import org.springframework.stereotype.Component;
 
+@Component
 public class HibernateUtilLibrary {
     private static HibernateUtilLibrary util = null;
     private static Logger log = Logger.getLogger(HibernateUtilLibrary.class);

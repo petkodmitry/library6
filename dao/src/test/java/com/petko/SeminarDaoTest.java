@@ -5,16 +5,20 @@ import com.petko.entities.SeminarsEntity;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class SeminarDaoTest {
-    public static SeminarDao seminarDao;
+    @Autowired
+    public SeminarDao seminarDao;
 
-    @BeforeClass
+    /*@BeforeClass
     public static void init() {
         seminarDao = SeminarDao.getInstance();
-    }
+    }*/
 
     @Test (expected = DaoException.class)
     public void testSave1() throws DaoException {

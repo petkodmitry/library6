@@ -9,6 +9,7 @@ public interface Command {
     String errorMessageAttribute = Constants.ERROR_MESSAGE_ATTRIBUTE;
     String forwardPageAttribute = Constants.FORWARD_PAGE_ATTRIBUTE;
 
+    void redirectToMainPage(HttpServletRequest request, String login);
     // основной метод для логики команды
     void execute(HttpServletRequest request, HttpServletResponse response);
     // добавить в параметры запроса страницу для перехода после успешного выполнения команды

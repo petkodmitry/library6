@@ -1,5 +1,6 @@
-package com.petko;
+package com.petko.managers;
 
+import com.petko.ActiveUsers;
 import com.petko.commands.CommandType;
 import com.petko.constants.Constants;
 

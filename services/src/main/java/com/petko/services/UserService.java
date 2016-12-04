@@ -3,21 +3,26 @@ package com.petko.services;
 import com.petko.ActiveUsers;
 import com.petko.DaoException;
 import com.petko.ExceptionsHandler;
+import com.petko.dao.IUserDao;
 import com.petko.dao.UserDao;
 import com.petko.entities.UsersEntity;
 import com.petko.utils.HibernateUtilLibrary;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.*;
 
-public class UserService {
+@Service
+public class UserService implements IUserService {
     private static UserService instance;
     private static Logger log = Logger.getLogger(UserService.class);
-    private static UserDao userDao = UserDao.getInstance();
+    @Autowired
+    private IUserDao userDao;
     private static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
 
     private UserService() {

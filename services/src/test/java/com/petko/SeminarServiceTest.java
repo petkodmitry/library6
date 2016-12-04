@@ -7,21 +7,26 @@ import com.petko.services.SeminarService;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.mock;
 
+@Component
 public class SeminarServiceTest {
     public static SeminarService seminarService;
-    public static SeminarDao seminarDao;
+    @Autowired
+    public SeminarDao seminarDao;
     public static HttpServletRequest request;
 
     @BeforeClass
     public static void init() {
         seminarService = SeminarService.getInstance();
-        seminarDao = SeminarDao.getInstance();
+//        seminarDao = SeminarDao.getInstance();
         request = mock(HttpServletRequest.class);
     }
 

@@ -4,6 +4,7 @@ import com.petko.DaoException;
 import com.petko.ExceptionsHandler;
 import com.petko.constants.Constants;
 import com.petko.dao.BookDao;
+import com.petko.dao.IOrderDao;
 import com.petko.dao.OrderDao;
 import com.petko.dao.UserDao;
 import com.petko.entities.*;
@@ -12,18 +13,24 @@ import com.petko.vo.FullOrdersList;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-public class OrderService {
+@Service
+public class OrderService implements IOrderService {
     private static OrderService instance;
     private static Logger log = Logger.getLogger(OrderService.class);
-    private static OrderDao orderDao = OrderDao.getInstance();
-    private static BookDao bookDao = BookDao.getInstance();
-    private static UserDao userDao = UserDao.getInstance();
+    @Autowired
+    private IOrderDao orderDao;
+    @Autowired
+    private BookDao bookDao;
+    @Autowired
+    private UserDao userDao;
     private static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
 
     private OrderService() {

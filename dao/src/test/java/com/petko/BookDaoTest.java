@@ -5,18 +5,22 @@ import com.petko.entities.BooksEntity;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Assert;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Component
 public class BookDaoTest {
-    public static BookDao bookDao;
+    @Autowired
+    public BookDao bookDao;
 
-    @BeforeClass
+    /*@BeforeClass
     public static void init() {
         bookDao = BookDao.getInstance();
-    }
+    }*/
 
     @Test (expected = DaoException.class)
     public void testSave1() throws DaoException {

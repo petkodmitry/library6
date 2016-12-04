@@ -7,6 +7,8 @@ import static org.mockito.Mockito.*;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -15,15 +17,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Component
 public class UserServiceTest {
     public static UserService userService;
-    public static UserDao userDao;
+    @Autowired
+    public UserDao userDao;
     public static HttpServletRequest request;
 
     @BeforeClass
     public static void init() {
         userService = UserService.getInstance();
-        userDao = UserDao.getInstance();
+//        userDao = UserDao.getInstance();
         request = mock(HttpServletRequest.class);
     }
 

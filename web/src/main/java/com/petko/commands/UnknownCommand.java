@@ -1,6 +1,6 @@
 package com.petko.commands;
 
-import com.petko.ResourceManager;
+import com.petko.managers.ResourceManager;
 import com.petko.constants.Constants;
 
 import javax.servlet.http.HttpServletRequest;

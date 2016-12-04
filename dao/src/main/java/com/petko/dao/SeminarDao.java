@@ -5,22 +5,14 @@ import com.petko.entities.SeminarsEntity;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
 
-public class SeminarDao extends BaseDao<SeminarsEntity> {
+@Repository
+public class SeminarDao extends BaseDao<SeminarsEntity> implements ISeminarDao {
     private static Logger log = Logger.getLogger(SeminarDao.class);
-
-    private static SeminarDao instance;
-    private SeminarDao() {}
-
-    public static synchronized SeminarDao getInstance() {
-        if (instance == null) {
-            instance = new SeminarDao();
-        }
-        return instance;
-    }
 
     /**
      * all seminars of a User
@@ -52,7 +44,7 @@ public class SeminarDao extends BaseDao<SeminarsEntity> {
      * @return List of future Seminars
      * @throws DaoException
      */
-    public List<SeminarsEntity> getAll() throws DaoException{
+    public List<SeminarsEntity> getAll() throws DaoException {
         List<SeminarsEntity> result;
         try {
             session = util.getSession();

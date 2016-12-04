@@ -1,4 +1,4 @@
-package com.petko;
+package com.petko.managers;
 
 import java.util.ResourceBundle;
 

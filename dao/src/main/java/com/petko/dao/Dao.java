@@ -37,4 +37,5 @@ public interface Dao<T extends Entity> {
      * @param entity - Entity to be deleted
      */
     void delete(T entity) throws DaoException;
+    Long getTotal() throws DaoException;
 }

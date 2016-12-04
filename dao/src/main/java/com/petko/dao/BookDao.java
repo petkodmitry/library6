@@ -5,24 +5,14 @@ import com.petko.entities.BooksEntity;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Set;
 
-public class BookDao extends BaseDao<BooksEntity> {
+@Repository
+public class BookDao extends BaseDao<BooksEntity> implements IBookDao {
     private static Logger log = Logger.getLogger(BookDao.class);
-
-    private static BookDao instance;
-
-    private BookDao() {
-    }
-
-    public static synchronized BookDao getInstance() {
-        if (instance == null) {
-            instance = new BookDao();
-        }
-        return instance;
-    }
 
     /**
      *

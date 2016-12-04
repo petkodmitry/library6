@@ -5,22 +5,14 @@ import com.petko.entities.UsersEntity;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Set;
 
-public class UserDao extends BaseDao<UsersEntity> {
+@Repository
+public class UserDao extends BaseDao<UsersEntity> implements IUserDao {
     private static Logger log = Logger.getLogger(UserDao.class);
-
-    private static UserDao instance;
-    private UserDao() {}
-
-    public static synchronized UserDao getInstance() {
-        if (instance == null) {
-            instance = new UserDao();
-        }
-        return instance;
-    }
 
     /**
      * gets User by his Login
