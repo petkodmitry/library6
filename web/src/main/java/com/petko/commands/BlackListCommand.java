@@ -24,12 +24,11 @@ public class BlackListCommand extends AbstractCommand{
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        UserService service = UserService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        if (service.isAdminUser(request, login)) {
+        if (userService.isAdminUser(request, login)) {
             String page = ResourceManager.getInstance().getProperty(Constants.PAGE_BLACK_LIST);
-            List<UsersEntity> blackList = service.getUsersByBlock(request, true);
+            List<UsersEntity> blackList = userService.getUsersByBlock(request, true);
             session.setAttribute("blackList", blackList);
             setForwardPage(request, page);
         // если не админ, сообщаем о невозможности выполнения команды

@@ -1,10 +1,13 @@
 package com.petko;
 
 import com.petko.dao.BookDao;
+import com.petko.dao.IBookDao;
+import com.petko.dao.IUserDao;
 import com.petko.dao.UserDao;
 import com.petko.entities.BooksEntity;
 import com.petko.entities.UsersEntity;
 import com.petko.services.BookService;
+import com.petko.services.IBookService;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Assert;
@@ -22,16 +25,18 @@ import java.util.stream.Collectors;
 
 @Component
 public class BookServiceTest {
-    public static BookService bookService;
+//    public static BookService bookService;
     @Autowired
-    public BookDao bookDao;
+    public IBookDao bookDao;
     @Autowired
-    public UserDao userDao;
+    public IBookService bookService;
+    @Autowired
+    public IUserDao userDao;
     public static HttpServletRequest request;
 
     @BeforeClass
     public static void init() {
-        bookService = BookService.getInstance();
+//        bookService = BookService.getInstance();
 //        bookDao = BookDao.getInstance();
         request = mock(HttpServletRequest.class);
     }

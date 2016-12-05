@@ -2,10 +2,9 @@ package com.petko;
 
 import static org.mockito.Mockito.*;
 
-import com.petko.dao.BookDao;
-import com.petko.dao.OrderDao;
-import com.petko.dao.UserDao;
+import com.petko.dao.*;
 import com.petko.entities.*;
+import com.petko.services.IOrderService;
 import com.petko.services.OrderService;
 import com.petko.utils.HibernateUtilLibrary;
 import com.petko.vo.FullOrdersList;
@@ -26,18 +25,21 @@ import java.util.stream.Collectors;
 
 @Component
 public class OrderServiceTest {
-    public static OrderService orderService;
     @Autowired
-    public OrderDao orderDao;
+    public IOrderDao orderDao;
     @Autowired
-    public UserDao userDao;
+    public IOrderService orderService;
     @Autowired
-    public BookDao bookDao;
+    public IUserDao userDao;
+    @Autowired
+    public IBookDao bookDao;
+    @Autowired
+    private HibernateUtilLibrary util;
     public static HttpServletRequest request;
 
     @BeforeClass
     public static void init() {
-        orderService = OrderService.getInstance();
+//        orderService = OrderService.getInstance();
 //        orderDao = OrderDao.getInstance();
         request = mock(HttpServletRequest.class);
     }
@@ -51,7 +53,7 @@ public class OrderServiceTest {
     }
 
     private OrdersEntity saveAndGetNewOrderEntity() throws DaoException {
-        Session currentSession = HibernateUtilLibrary.getHibernateUtil().getSession();
+        Session currentSession = util.getSession();
         Transaction transaction = currentSession.beginTransaction();
 
         OrdersEntity orderEntity = new OrdersEntity();

@@ -21,12 +21,11 @@ public class UnblockUserCommand extends AbstractCommand {
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        UserService service = UserService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        if (service.isAdminUser(request, login)) {
+        if (userService.isAdminUser(request, login)) {
             String userLogin = request.getParameter("login");
-            service.setBlockUser(request, userLogin, false);
+            userService.setBlockUser(request, userLogin, false);
             BlackListCommand.getInstance().execute(request, response);
         // если не админ, сообщаем о невозможности выполнения команды
         } else if ((request.getAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE)) == null) {

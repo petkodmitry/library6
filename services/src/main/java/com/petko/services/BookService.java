@@ -3,6 +3,7 @@ package com.petko.services;
 import com.petko.DaoException;
 import com.petko.ExceptionsHandler;
 import com.petko.dao.IBookDao;
+import com.petko.dao.IUserDao;
 import com.petko.entities.BooksEntity;
 import com.petko.utils.HibernateUtilLibrary;
 import org.apache.log4j.Logger;
@@ -16,21 +17,13 @@ import java.util.*;
 
 @Service
 public class BookService implements IBookService {
-    private static BookService instance;
-    private static UserService userService = UserService.getInstance();
     private static Logger log = Logger.getLogger(BookService.class);
     @Autowired
     private IBookDao bookDao;
-    private static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
-
-    private BookService() {}
-
-    public static synchronized BookService getInstance() {
-        if(instance == null){
-            instance = new BookService();
-        }
-        return instance;
-    }
+    @Autowired
+    private IUserService userService;
+    @Autowired
+    private HibernateUtilLibrary util/* = HibernateUtilLibrary.getHibernateUtil()*/;
 
     /**
      * searches Books by Title or Author

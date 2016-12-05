@@ -1,5 +1,6 @@
 package com.petko;
 
+import com.petko.dao.ISeminarDao;
 import com.petko.dao.SeminarDao;
 import com.petko.entities.SeminarsEntity;
 import org.junit.Assert;
@@ -13,7 +14,7 @@ import java.util.List;
 @Component
 public class SeminarDaoTest {
     @Autowired
-    public SeminarDao seminarDao;
+    public ISeminarDao seminarDao;
 
     /*@BeforeClass
     public static void init() {

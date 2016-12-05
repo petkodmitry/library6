@@ -26,13 +26,11 @@ public class WaitingOrdersCommand extends AbstractCommand{
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        UserService userService = UserService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(request, login)) {
-            OrderService service = OrderService.getInstance();
             String page = ResourceManager.getInstance().getProperty(Constants.PAGE_WAITING_ORDERS);
-            List<FullOrdersList> waitingOrdersList = service.getOrdersByLoginAndStatus(request, null, OrderStatus.ORDERED);
+            List<FullOrdersList> waitingOrdersList = orderService.getOrdersByLoginAndStatus(request, null, OrderStatus.ORDERED);
             session.setAttribute("waitingOrdersList", waitingOrdersList);
             setForwardPage(request, page);
         // если не админ, сообщаем о невозможности выполнения команды

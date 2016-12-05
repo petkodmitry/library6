@@ -25,7 +25,6 @@ public class SearchBookForUserCommand extends AbstractCommand{
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        BookService service = BookService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
         String page = ResourceManager.getInstance().getProperty(Constants.PAGE_SEARCH_BOOK_FOR_USER);
@@ -35,7 +34,7 @@ public class SearchBookForUserCommand extends AbstractCommand{
          */
         String searchTextInBook;
         if ((searchTextInBook = request.getParameter("searchTextInBook")) != null && !"".equals(searchTextInBook)) {
-            searchBookForUser = service.searchBooksByTitleOrAuthor(request, searchTextInBook, login);
+            searchBookForUser = bookService.searchBooksByTitleOrAuthor(request, searchTextInBook, login);
             session.setAttribute("searchBookForUser", searchBookForUser);
         }
         setForwardPage(request, page);

@@ -19,21 +19,11 @@ import java.util.*;
 
 @Service
 public class UserService implements IUserService {
-    private static UserService instance;
     private static Logger log = Logger.getLogger(UserService.class);
     @Autowired
     private IUserDao userDao;
-    private static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
-
-    private UserService() {
-    }
-
-    public static synchronized UserService getInstance() {
-        if (instance == null) {
-            instance = new UserService();
-        }
-        return instance;
-    }
+    @Autowired
+    private HibernateUtilLibrary util/* = HibernateUtilLibrary.getHibernateUtil()*/;
 
     /**
      * Adds into active users List

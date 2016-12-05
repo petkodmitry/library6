@@ -2,8 +2,7 @@ package com.petko.commands;
 
 import com.petko.managers.ResourceManager;
 import com.petko.constants.Constants;
-import com.petko.services.IUserService;
-import com.petko.services.UserService;
+import com.petko.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -12,7 +11,13 @@ import javax.servlet.http.HttpServletRequest;
 @Controller(value = "abstractCommand")
 public abstract class AbstractCommand implements Command{
     @Autowired
-    private IUserService userService;
+    protected IBookService bookService;
+    @Autowired
+    protected IOrderService orderService;
+    @Autowired
+    protected ISeminarService seminarService;
+    @Autowired
+    protected IUserService userService;
 
     public void setErrorMessage(HttpServletRequest request, String message) {
         request.setAttribute(errorMessageAttribute, message);

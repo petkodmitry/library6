@@ -23,12 +23,11 @@ public class ShowUsersCommand extends AbstractCommand {
     }
 
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        UserService service = UserService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
         // если админ, то выполняем команду
-        if (service.isAdminUser(request, login)) {
-            List<UsersEntity> userSet = service.getAll(request);
+        if (userService.isAdminUser(request, login)) {
+            List<UsersEntity> userSet = userService.getAll(request);
             if (userSet.isEmpty()) setErrorMessage(request, "Не удалось получить список пользователей");
             request.setAttribute(Constants.USER_SET, userSet);
             String page = ResourceManager.getInstance().getProperty(Constants.PAGE_SHOW_USERS);

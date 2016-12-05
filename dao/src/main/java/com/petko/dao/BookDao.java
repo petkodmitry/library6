@@ -5,6 +5,8 @@ import com.petko.entities.BooksEntity;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,6 +15,12 @@ import java.util.Set;
 @Repository
 public class BookDao extends BaseDao<BooksEntity> implements IBookDao {
     private static Logger log = Logger.getLogger(BookDao.class);
+    private SessionFactory sessionFactory;
+
+    @Autowired
+    public BookDao(SessionFactory sessionFactory) {
+        super(sessionFactory);
+    }
 
     /**
      *

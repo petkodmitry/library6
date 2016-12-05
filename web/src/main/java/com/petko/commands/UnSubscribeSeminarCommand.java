@@ -21,11 +21,10 @@ public class UnSubscribeSeminarCommand extends AbstractCommand{
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        SeminarService service = SeminarService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
         Integer seminarId = Integer.parseInt(request.getParameter("seminarId"));
-        service.unSubscribeSeminar(request, login, seminarId);
+        seminarService.unSubscribeSeminar(request, login, seminarId);
 
         MySeminarsCommand.getInstance().execute(request, response);
     }

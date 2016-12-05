@@ -21,7 +21,7 @@ public class LogoutCommand extends AbstractCommand {
     public void execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        UserService.getInstance().logOut(request, login);
+        userService.logOut(request, login);
         redirectToLoginPage(request);
     }
 }

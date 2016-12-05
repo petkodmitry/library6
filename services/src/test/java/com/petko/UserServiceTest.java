@@ -1,7 +1,9 @@
 package com.petko;
 
+import com.petko.dao.IUserDao;
 import com.petko.dao.UserDao;
 import com.petko.entities.UsersEntity;
+import com.petko.services.IUserService;
 import com.petko.services.UserService;
 import static org.mockito.Mockito.*;
 import org.junit.Assert;
@@ -19,14 +21,16 @@ import java.util.stream.Collectors;
 
 @Component
 public class UserServiceTest {
-    public static UserService userService;
+//    public static UserService userService;
     @Autowired
-    public UserDao userDao;
+    public IUserDao userDao;
+    @Autowired
+    public IUserService userService;
     public static HttpServletRequest request;
 
     @BeforeClass
     public static void init() {
-        userService = UserService.getInstance();
+//        userService = UserService.getInstance();
 //        userDao = UserDao.getInstance();
         request = mock(HttpServletRequest.class);
     }

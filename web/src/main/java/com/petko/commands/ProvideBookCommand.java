@@ -23,12 +23,11 @@ public class ProvideBookCommand extends AbstractCommand {
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        OrderService service = OrderService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        if (UserService.getInstance().isAdminUser(request, login)) {
+        if (userService.isAdminUser(request, login)) {
             Integer orderId = Integer.parseInt(request.getParameter("orderId"));
-            service.provideBook(request, orderId);
+            orderService.provideBook(request, orderId);
             WaitingOrdersCommand.getInstance().execute(request, response);
         // если не админ, сообщаем о невозможности выполнения команды
         } else if ((request.getAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE)) == null) {

@@ -7,6 +7,8 @@ import com.petko.entities.OrdersEntity;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -15,6 +17,11 @@ import java.util.List;
 @Repository
 public class OrderDao extends BaseDao<OrdersEntity> implements IOrderDao {
     private static Logger log = Logger.getLogger(OrderDao.class);
+
+    @Autowired
+    public OrderDao(SessionFactory sessionFactory) {
+        super(sessionFactory);
+    }
 
     /**
      * all Orders of a User by specific Status

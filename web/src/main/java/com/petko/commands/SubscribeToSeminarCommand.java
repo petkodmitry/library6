@@ -21,11 +21,10 @@ public class SubscribeToSeminarCommand extends AbstractCommand{
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        SeminarService service = SeminarService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
         Integer seminarId = Integer.parseInt(request.getParameter("seminarId"));
-        service.subscribeToSeminar(request, login, seminarId);
+        seminarService.subscribeToSeminar(request, login, seminarId);
 
         ChooseSeminarsCommand.getInstance().execute(request, response);
     }

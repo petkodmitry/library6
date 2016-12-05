@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class OrderService implements IOrderService {
-    private static OrderService instance;
     private static Logger log = Logger.getLogger(OrderService.class);
     @Autowired
     private IOrderDao orderDao;
@@ -31,17 +30,8 @@ public class OrderService implements IOrderService {
     private BookDao bookDao;
     @Autowired
     private UserDao userDao;
-    private static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
-
-    private OrderService() {
-    }
-
-    public static synchronized OrderService getInstance() {
-        if (instance == null) {
-            instance = new OrderService();
-        }
-        return instance;
-    }
+    @Autowired
+    private HibernateUtilLibrary util/* = HibernateUtilLibrary.getHibernateUtil()*/;
 
     /*** getting orders list by login and order status
      * @param request     - current http request

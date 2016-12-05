@@ -1,5 +1,6 @@
 package com.petko;
 
+import com.petko.dao.IOrderDao;
 import com.petko.dao.OrderDao;
 import com.petko.entities.BooksEntity;
 import com.petko.entities.OrderStatus;
@@ -16,7 +17,7 @@ import java.util.List;
 @Component
 public class OrderDaoTest {
     @Autowired
-    public OrderDao orderDao;
+    public IOrderDao orderDao;
 
     /*@BeforeClass
     public static void init() {

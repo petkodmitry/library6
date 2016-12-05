@@ -1,8 +1,10 @@
 package com.petko;
 
+import com.petko.dao.ISeminarDao;
 import com.petko.dao.SeminarDao;
 import com.petko.entities.SeminarsEntity;
 import com.petko.entities.UsersEntity;
+import com.petko.services.ISeminarService;
 import com.petko.services.SeminarService;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -18,14 +20,16 @@ import static org.mockito.Mockito.mock;
 
 @Component
 public class SeminarServiceTest {
-    public static SeminarService seminarService;
+//    public static SeminarService seminarService;
     @Autowired
-    public SeminarDao seminarDao;
+    public ISeminarDao seminarDao;
+    @Autowired
+    public ISeminarService seminarService;
     public static HttpServletRequest request;
 
     @BeforeClass
     public static void init() {
-        seminarService = SeminarService.getInstance();
+//        seminarService = SeminarService.getInstance();
 //        seminarDao = SeminarDao.getInstance();
         request = mock(HttpServletRequest.class);
     }

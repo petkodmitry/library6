@@ -1,5 +1,6 @@
 package com.petko;
 
+import com.petko.dao.IUserDao;
 import com.petko.dao.UserDao;
 import com.petko.entities.UsersEntity;
 import org.junit.Assert;
@@ -13,7 +14,7 @@ import java.util.*;
 @Component
 public class UserDaoTest {
     @Autowired
-    private UserDao userDao;
+    private IUserDao userDao;
 
     /*@BeforeClass
     public static void init() {

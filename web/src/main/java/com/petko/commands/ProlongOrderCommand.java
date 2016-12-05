@@ -21,11 +21,10 @@ public class ProlongOrderCommand extends AbstractCommand{
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        OrderService service = OrderService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
         Integer orderId = Integer.parseInt(request.getParameter("orderId"));
-        service.prolongOrder(request, login, orderId);
+        orderService.prolongOrder(request, login, orderId);
 
         MyBooksCommand.getInstance().execute(request, response);
     }

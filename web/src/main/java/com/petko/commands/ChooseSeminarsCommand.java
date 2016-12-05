@@ -25,12 +25,11 @@ public class ChooseSeminarsCommand extends AbstractCommand{
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        SeminarService service = SeminarService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
         String page = ResourceManager.getInstance().getProperty(Constants.PAGE_CHOOSE_SEMINARS);
         List<SeminarsEntity> availableSeminarsList;
-        availableSeminarsList = service.availableSeminarsForLogin(request, login);
+        availableSeminarsList = seminarService.availableSeminarsForLogin(request, login);
         session.setAttribute("availableSeminars", availableSeminarsList);
 
         setForwardPage(request, page);

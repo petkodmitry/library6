@@ -20,22 +20,13 @@ import java.util.*;
 
 @Service
 public class SeminarService implements ISeminarService {
-    private static SeminarService instance;
     private static Logger log = Logger.getLogger(SeminarService.class);
     @Autowired
     private ISeminarDao seminarDao;
     @Autowired
     private UserDao userDao;
-    private static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
-
-    private SeminarService() {}
-
-    public static synchronized SeminarService getInstance() {
-        if(instance == null){
-            instance = new SeminarService();
-        }
-        return instance;
-    }
+    @Autowired
+    private HibernateUtilLibrary util /*= HibernateUtilLibrary.getHibernateUtil()*/;
 
     /**
      * gives List of Seminars for User

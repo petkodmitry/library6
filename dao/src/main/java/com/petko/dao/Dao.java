@@ -38,4 +38,5 @@ public interface Dao<T extends Entity> {
      */
     void delete(T entity) throws DaoException;
     Long getTotal() throws DaoException;
+    List<T> getAbsolutelyAll() throws DaoException;
 }

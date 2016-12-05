@@ -24,10 +24,9 @@ public class AddBookCommand extends AbstractCommand {
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        BookService service = BookService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        if (UserService.getInstance().isAdminUser(request, login)) {
+        if (userService.isAdminUser(request, login)) {
             BooksEntity regData = (BooksEntity) session.getAttribute("regData");
             String page = ResourceManager.getInstance().getProperty(Constants.PAGE_ADD_BOOK);
             if (regData == null) {
@@ -40,7 +39,7 @@ public class AddBookCommand extends AbstractCommand {
                 regData.setAuthor(author);
                 if (title != null && author != null && !"".equals(title) && !"".equals(author)) {
                     regData.setIsBusy(false);
-                    service.add(request, regData);
+                    bookService.add(request, regData);
                     request.setAttribute("info", "Книга добавлена в базу библиотеки");
                     regData.setTitle("");
                     regData.setAuthor("");

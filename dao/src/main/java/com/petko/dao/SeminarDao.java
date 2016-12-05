@@ -5,6 +5,8 @@ import com.petko.entities.SeminarsEntity;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -13,6 +15,11 @@ import java.util.List;
 @Repository
 public class SeminarDao extends BaseDao<SeminarsEntity> implements ISeminarDao {
     private static Logger log = Logger.getLogger(SeminarDao.class);
+
+    @Autowired
+    public SeminarDao(SessionFactory sessionFactory) {
+        super(sessionFactory);
+    }
 
     /**
      * all seminars of a User

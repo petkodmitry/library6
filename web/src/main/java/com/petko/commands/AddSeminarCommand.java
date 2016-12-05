@@ -27,10 +27,9 @@ public class AddSeminarCommand extends AbstractCommand {
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        SeminarService service = SeminarService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        if (UserService.getInstance().isAdminUser(request, login)) {
+        if (userService.isAdminUser(request, login)) {
             SeminarsEntity regData = (SeminarsEntity) session.getAttribute("regData");
             String page = ResourceManager.getInstance().getProperty(Constants.PAGE_ADD_SEMINAR);
             if (regData == null) {
@@ -50,7 +49,7 @@ public class AddSeminarCommand extends AbstractCommand {
                 if (!"".equals(subject) && date != null && (today.before(date) || today.equals(date))) {
                     regData.setSubject(subject);
                     regData.setSeminarDate(date);
-                    service.add(request, regData);
+                    seminarService.add(request, regData);
                     request.setAttribute("info", "Семинар добавлен в базу");
                     session.removeAttribute("regData");
                 } else {

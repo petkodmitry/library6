@@ -5,6 +5,8 @@ import com.petko.entities.UsersEntity;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,6 +15,11 @@ import java.util.Set;
 @Repository
 public class UserDao extends BaseDao<UsersEntity> implements IUserDao {
     private static Logger log = Logger.getLogger(UserDao.class);
+
+    @Autowired
+    public UserDao(SessionFactory sessionFactory) {
+        super(sessionFactory);
+    }
 
     /**
      * gets User by his Login

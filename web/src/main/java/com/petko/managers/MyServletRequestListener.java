@@ -14,7 +14,7 @@ public class MyServletRequestListener implements ServletRequestListener {
 
     @Override
     public void requestInitialized(ServletRequestEvent servletRequestEvent) {
-        util = HibernateUtilLibrary.getHibernateUtil();
+//        util = HibernateUtilLibrary.getHibernateUtil();
         session = util.getSession();
         transaction = session.beginTransaction();
     }

@@ -10,21 +10,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class HibernateUtilLibrary {
-    private static HibernateUtilLibrary util = null;
     private static Logger log = Logger.getLogger(HibernateUtilLibrary.class);
     private static SessionFactory sessionFactory = null;
     private static ThreadLocal<Session> sessions = new ThreadLocal<>();
-
-    /**
-     * gives HibernateUtil singleton
-     * @return HibernateUtil singleton
-     */
-    public static synchronized HibernateUtilLibrary getHibernateUtil() {
-        if (util == null){
-            util = new HibernateUtilLibrary();
-        }
-        return util;
-    }
 
     private HibernateUtilLibrary() {
         try {

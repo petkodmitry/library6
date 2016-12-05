@@ -1,8 +1,6 @@
 package com.petko.commands;
 
 import com.petko.constants.Constants;
-import com.petko.services.SeminarService;
-import com.petko.services.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,12 +20,11 @@ public class DeleteSeminarCommand extends AbstractCommand {
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        SeminarService service = SeminarService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        if (UserService.getInstance().isAdminUser(request, login)) {
+        if (userService.isAdminUser(request, login)) {
             Integer seminarId = Integer.parseInt(request.getParameter("seminarId"));
-            service.delete(request, seminarId);
+            seminarService.delete(request, seminarId);
 
             request.setAttribute("info", "Семинар с ID " + seminarId + " успешно удалён");
 

@@ -4,17 +4,12 @@ import com.petko.DaoException;
 import com.petko.entities.Entity;
 import com.petko.utils.HibernateUtilLibrary;
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.criterion.CriteriaQuery;
-import org.hibernate.criterion.Criterion;
+import org.hibernate.*;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +17,16 @@ import java.util.Map;
 @Repository
 public class BaseDao<T extends Entity> implements Dao<T> {
     private static Logger log = Logger.getLogger(BaseDao.class);
-    protected static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
-    protected static Session session;
+    private SessionFactory sessionFactory;
+    protected Session session;
+    @Autowired
+    protected HibernateUtilLibrary util/* = HibernateUtilLibrary.getHibernateUtil()*/;
+
+    @Autowired
+    public BaseDao(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+        this.session = sessionFactory.openSession();
+    }
 
     /**
      * adds entity in database

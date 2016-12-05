@@ -1,6 +1,7 @@
 package com.petko;
 
 import com.petko.dao.BookDao;
+import com.petko.dao.IBookDao;
 import com.petko.entities.BooksEntity;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,7 +16,7 @@ import java.util.Set;
 @Component
 public class BookDaoTest {
     @Autowired
-    public BookDao bookDao;
+    public IBookDao bookDao;
 
     /*@BeforeClass
     public static void init() {

@@ -26,12 +26,11 @@ public class MyBooksCommand extends AbstractCommand{
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        OrderService service = OrderService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
         String page = ResourceManager.getInstance().getProperty(Constants.PAGE_MY_BOOKS);
         List<FullOrdersList> myBooksList;
-        myBooksList = service.getOrdersByLoginAndStatus(request, login, OrderStatus.ON_HAND);
+        myBooksList = orderService.getOrdersByLoginAndStatus(request, login, OrderStatus.ON_HAND);
         session.setAttribute("myBooksList", myBooksList);
 
         setForwardPage(request, page);

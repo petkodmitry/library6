@@ -24,10 +24,9 @@ public class RegisterCommand extends AbstractCommand {
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        UserService service = UserService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        if (login == null || service.isAdminUser(request, login)) {
+        if (login == null || userService.isAdminUser(request, login)) {
 
             String page = ResourceManager.getInstance().getProperty(Constants.PAGE_REGISTRATION);
             UsersEntity regData;
@@ -43,7 +42,7 @@ public class RegisterCommand extends AbstractCommand {
              */
             else {
                 regData = (UsersEntity) session.getAttribute("regData");
-                regData = service.setAllDataOfEntity(regData, request.getParameter("newName"), request.getParameter("newLastName"),
+                regData = userService.setAllDataOfEntity(regData, request.getParameter("newName"), request.getParameter("newLastName"),
                         request.getParameter("newLogin"), request.getParameter("newPassword"), false, false);
                 String repeatPassword = request.getParameter("repeatPassword");
                 /**
@@ -53,16 +52,16 @@ public class RegisterCommand extends AbstractCommand {
                     /**
                      * check if asked login exists in database
                      */
-                    if (service.isLoginExists(request, regData.getLogin())) {
+                    if (userService.isLoginExists(request, regData.getLogin())) {
                         request.setAttribute("unavailableMessage", "логин НЕдоступен!");
                     } else {
                         request.setAttribute("unavailableMessage", "логин доступен");
                         /**
                          * if all data is entered
                          */
-                        if (service.isAllRegisterDataEntered(regData, repeatPassword)) {
-                            if (service.isAllPasswordRulesFollowed(regData.getPassword(), repeatPassword)) {
-                                service.add(request, regData);
+                        if (userService.isAllRegisterDataEntered(regData, repeatPassword)) {
+                            if (userService.isAllPasswordRulesFollowed(regData.getPassword(), repeatPassword)) {
+                                userService.add(request, regData);
                                 session.removeAttribute("regData");
                                 page = ResourceManager.getInstance().getProperty(Constants.PAGE_REGISTRATION_OK);
                             } else {

@@ -23,11 +23,10 @@ public class OrderToHomeCommand extends AbstractCommand {
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        OrderService service = OrderService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
         int bookId = Integer.parseInt(request.getParameter("bookId"));
-        service.orderToHomeOrToRoom(request, login, bookId, true);
+        orderService.orderToHomeOrToRoom(request, login, bookId, true);
 
         String page = ResourceManager.getInstance().getProperty(Constants.PAGE_SEARCH_BOOK_FOR_USER);
         setForwardPage(request, page);

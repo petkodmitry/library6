@@ -24,15 +24,13 @@ public class UsersOfSeminarCommand extends AbstractCommand {
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        SeminarService service = SeminarService.getInstance();
-        UserService userService = UserService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
         String page = ResourceManager.getInstance().getProperty(Constants.PAGE_ADMIN_SEMINARS);
 
         if (userService.isAdminUser(request, login)) {
             Integer seminarId = Integer.parseInt(request.getParameter("seminarId"));
-            SeminarsEntity seminarEntity = service.getById(request, seminarId);
+            SeminarsEntity seminarEntity = seminarService.getById(request, seminarId);
             session.setAttribute("seminarEntity", seminarEntity);
             setForwardPage(request, page);
         // если не админ, сообщаем о невозможности выполнения команды

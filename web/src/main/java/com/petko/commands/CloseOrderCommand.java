@@ -23,14 +23,13 @@ public class CloseOrderCommand extends AbstractCommand{
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        OrderService service = OrderService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
 
-        if (UserService.getInstance().isAdminUser(request, login)) {
+        if (userService.isAdminUser(request, login)) {
             int orderId = Integer.parseInt(request.getParameter("orderId"));
-            String status = service.getById(request, orderId).getStatus();
-            service.closeOrder(request, null, orderId);
+            String status = orderService.getById(request, orderId).getStatus();
+            orderService.closeOrder(request, null, orderId);
             if (OrderStatus.ORDERED.toString().equals(status)) {
                 WaitingOrdersCommand.getInstance().execute(request, response);
             } else if (OrderStatus.ON_HAND.toString().equals(status)) {
