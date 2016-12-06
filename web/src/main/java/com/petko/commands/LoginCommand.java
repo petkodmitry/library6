@@ -14,17 +14,9 @@ import java.util.Enumeration;
 
 @Controller
 public class LoginCommand extends AbstractCommand {
-    private static LoginCommand instance;
     @Autowired
     private IUserService userService;
     private LoginCommand() {}
-
-    public static synchronized LoginCommand getInstance() {
-        if(instance == null){
-            instance = new LoginCommand();
-        }
-        return instance;
-    }
 
     public void execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();

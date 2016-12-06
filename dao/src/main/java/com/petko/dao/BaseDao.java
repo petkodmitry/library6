@@ -9,24 +9,27 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Map;
 
 @Repository
+//@Transactional
 public class BaseDao<T extends Entity> implements Dao<T> {
     private static Logger log = Logger.getLogger(BaseDao.class);
-    private SessionFactory sessionFactory;
+    @Autowired
+    protected SessionFactory sessionFactory;
     protected Session session;
     @Autowired
     protected HibernateUtilLibrary util/* = HibernateUtilLibrary.getHibernateUtil()*/;
 
-    @Autowired
-    public BaseDao(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-        this.session = sessionFactory.openSession();
-    }
+//    @Autowired
+//    public BaseDao(SessionFactory sessionFactory) {
+//        this.sessionFactory = sessionFactory;
+//        this.session = sessionFactory.getCurrentSession();
+//    }
 
     /**
      * adds entity in database

@@ -3,10 +3,7 @@ package com.petko.services;
 import com.petko.DaoException;
 import com.petko.ExceptionsHandler;
 import com.petko.constants.Constants;
-import com.petko.dao.BookDao;
-import com.petko.dao.IOrderDao;
-import com.petko.dao.OrderDao;
-import com.petko.dao.UserDao;
+import com.petko.dao.*;
 import com.petko.entities.*;
 import com.petko.utils.HibernateUtilLibrary;
 import com.petko.vo.FullOrdersList;
@@ -27,9 +24,9 @@ public class OrderService implements IOrderService {
     @Autowired
     private IOrderDao orderDao;
     @Autowired
-    private BookDao bookDao;
+    private IBookDao bookDao;
     @Autowired
-    private UserDao userDao;
+    private IUserDao userDao;
     @Autowired
     private HibernateUtilLibrary util/* = HibernateUtilLibrary.getHibernateUtil()*/;
 

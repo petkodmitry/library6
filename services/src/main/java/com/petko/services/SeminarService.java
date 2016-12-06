@@ -4,8 +4,7 @@ import com.petko.DaoException;
 import com.petko.ExceptionsHandler;
 import com.petko.constants.Constants;
 import com.petko.dao.ISeminarDao;
-import com.petko.dao.SeminarDao;
-import com.petko.dao.UserDao;
+import com.petko.dao.IUserDao;
 import com.petko.entities.SeminarsEntity;
 import com.petko.entities.UsersEntity;
 import com.petko.utils.HibernateUtilLibrary;
@@ -24,7 +23,7 @@ public class SeminarService implements ISeminarService {
     @Autowired
     private ISeminarDao seminarDao;
     @Autowired
-    private UserDao userDao;
+    private IUserDao userDao;
     @Autowired
     private HibernateUtilLibrary util /*= HibernateUtilLibrary.getHibernateUtil()*/;
 

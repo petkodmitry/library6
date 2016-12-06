@@ -17,8 +17,8 @@ public enum CommandType {
     public static Command getCommand(String cmd) {
         CommandType type = getCommandType(cmd);
         switch (type) {
-            case LOGIN:
-                return LoginCommand.getInstance();
+//            case LOGIN:
+//                return LoginCommand.getInstance();
             case REGISTER:
                 return RegisterCommand.getInstance();
             case SHOWUSERS:

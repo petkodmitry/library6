@@ -17,10 +17,10 @@ public class BookDao extends BaseDao<BooksEntity> implements IBookDao {
     private static Logger log = Logger.getLogger(BookDao.class);
     private SessionFactory sessionFactory;
 
-    @Autowired
-    public BookDao(SessionFactory sessionFactory) {
-        super(sessionFactory);
-    }
+//    @Autowired
+//    public BookDao(SessionFactory sessionFactory) {
+//        super(sessionFactory);
+//    }
 
     /**
      *

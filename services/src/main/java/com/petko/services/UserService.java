@@ -4,26 +4,40 @@ import com.petko.ActiveUsers;
 import com.petko.DaoException;
 import com.petko.ExceptionsHandler;
 import com.petko.dao.IUserDao;
-import com.petko.dao.UserDao;
 import com.petko.entities.UsersEntity;
 import com.petko.utils.HibernateUtilLibrary;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.*;
 
 @Service
+@Transactional
 public class UserService implements IUserService {
     private static Logger log = Logger.getLogger(UserService.class);
+    private SessionFactory sessionFactory;
     @Autowired
     private IUserDao userDao;
     @Autowired
+    private TransactionTemplate transactionTemplate;
+    @Autowired
     private HibernateUtilLibrary util/* = HibernateUtilLibrary.getHibernateUtil()*/;
+
+    @Autowired
+    public UserService(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+//        this.session = sessionFactory.openSession();
+    }
 
     /**
      * Adds into active users List
@@ -58,6 +72,7 @@ public class UserService implements IUserService {
      * @param password to be checked
      * @return succes or not
      */
+    /**
     public boolean isLoginSuccess(HttpServletRequest request, String login, String password) {
         if (login == null || password == null) return false;
         Session currentSession = null;
@@ -84,6 +99,29 @@ public class UserService implements IUserService {
             util.releaseSession(currentSession);
         }
     }
+    */
+    public boolean isLoginSuccess(HttpServletRequest request, String login, String password) {
+        if (login == null || password == null) return false;
+        return transactionTemplate.execute(new TransactionCallback<Boolean>() {
+            @Override
+            public Boolean doInTransaction(TransactionStatus transactionStatus) {
+                try {
+                    UsersEntity user = userDao.getByLogin(login);
+                    log.info("Get user by login (commit)");
+                    if (user != null && password.equals(user.getPassword())) {
+                        addToActiveUsers(login);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } catch (DaoException e) {
+                    transactionStatus.setRollbackOnly();
+                    ExceptionsHandler.processException(request, e);
+                    return false;
+                }
+            }
+        });
+    }
 
     /**
      * Checks if the User is Admin or not
@@ -91,7 +129,7 @@ public class UserService implements IUserService {
      * @param login to be checked
      * @return admin or not (true or false)
      */
-    public boolean isAdminUser(HttpServletRequest request, String login) {
+    /**public boolean isAdminUser(HttpServletRequest request, String login) {
         boolean result = false;
         Session currentSession = null;
         Transaction transaction = null;
@@ -109,6 +147,19 @@ public class UserService implements IUserService {
             util.releaseSession(currentSession);
         }
         return result;
+    }*/
+    public boolean isAdminUser(HttpServletRequest request, String login) {
+        return transactionTemplate.execute(transactionStatus -> {
+            try {
+                UsersEntity user = userDao.getByLogin(login);
+                if (user != null) return user.getIsAdmin();
+                else return false;
+            } catch (DaoException e) {
+                transactionStatus.setRollbackOnly();
+                ExceptionsHandler.processException(request, e);
+                return false;
+            }
+        });
     }
 
     /**

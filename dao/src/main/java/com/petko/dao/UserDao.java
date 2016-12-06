@@ -16,10 +16,10 @@ import java.util.Set;
 public class UserDao extends BaseDao<UsersEntity> implements IUserDao {
     private static Logger log = Logger.getLogger(UserDao.class);
 
-    @Autowired
-    public UserDao(SessionFactory sessionFactory) {
-        super(sessionFactory);
-    }
+//    @Autowired
+//    public UserDao(SessionFactory sessionFactory) {
+//        super(sessionFactory);
+//    }
 
     /**
      * gets User by his Login
@@ -27,6 +27,7 @@ public class UserDao extends BaseDao<UsersEntity> implements IUserDao {
      * @return User by his Login
      * @throws DaoException
      */
+    /**
     public UsersEntity getByLogin(String login) throws DaoException {
         UsersEntity result;
         try {
@@ -39,6 +40,24 @@ public class UserDao extends BaseDao<UsersEntity> implements IUserDao {
             log.info("get user by login");
         } catch (HibernateException e) {
             String message = "Error getting user by login in UserDao";
+            log.error(message + e);
+            throw new DaoException(message);
+        }
+        return result;
+    }
+    */
+    public UsersEntity getByLogin(String login) throws DaoException {
+        UsersEntity result;
+        try {
+            session = sessionFactory.getCurrentSession();
+            String hql = "select U from UsersEntity U where U.login=:param";
+            Query query = session.createQuery(hql);
+//            query.setCacheable(true);
+            query.setParameter("param", login);
+            result = (UsersEntity) query.uniqueResult();
+            log.info("get user by login");
+        } catch (HibernateException e) {
+            String message = "Error getting user by login in UserDao. ";
             log.error(message + e);
             throw new DaoException(message);
         }
