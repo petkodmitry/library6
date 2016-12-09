@@ -4,6 +4,7 @@ import com.petko.managers.ResourceManager;
 import com.petko.constants.Constants;
 import com.petko.entities.UsersEntity;
 import com.petko.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,6 +12,8 @@ import javax.servlet.http.HttpSession;
 
 public class RegisterCommand extends AbstractCommand {
     private static RegisterCommand instance;
+    @Autowired
+    private ResourceManager resourceManager;
 
     private RegisterCommand() {
     }
@@ -26,9 +29,9 @@ public class RegisterCommand extends AbstractCommand {
     public void execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        if (login == null || userService.isAdminUser(request, login)) {
+        if (login == null || userService.isAdminUser(/*request,*/ login)) {
 
-            String page = ResourceManager.getInstance().getProperty(Constants.PAGE_REGISTRATION);
+            String page = resourceManager.getProperty(Constants.PAGE_REGISTRATION);
             UsersEntity regData;
             /**
              * creating attribute of the session: UsersEntity regData
@@ -63,7 +66,7 @@ public class RegisterCommand extends AbstractCommand {
                             if (userService.isAllPasswordRulesFollowed(regData.getPassword(), repeatPassword)) {
                                 userService.add(request, regData);
                                 session.removeAttribute("regData");
-                                page = ResourceManager.getInstance().getProperty(Constants.PAGE_REGISTRATION_OK);
+                                page = resourceManager.getProperty(Constants.PAGE_REGISTRATION_OK);
                             } else {
                                 setErrorMessage(request, "Пароль должен содержать 8 символов");
                             }

@@ -5,6 +5,7 @@ import com.petko.constants.Constants;
 import com.petko.entities.SeminarsEntity;
 import com.petko.services.SeminarService;
 import com.petko.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +14,9 @@ import java.util.List;
 
 public class AdminSeminarsCommand extends AbstractCommand {
     private static AdminSeminarsCommand instance;
+
+    @Autowired
+    private ResourceManager resourceManager;
 
     private AdminSeminarsCommand() {}
 
@@ -27,9 +31,9 @@ public class AdminSeminarsCommand extends AbstractCommand {
     public void execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        String page = ResourceManager.getInstance().getProperty(Constants.PAGE_ADMIN_SEMINARS);
+        String page = resourceManager.getProperty(Constants.PAGE_ADMIN_SEMINARS);
 
-        if (userService.isAdminUser(request, login)) {
+        if (userService.isAdminUser(/*request,*/ login)) {
             List<SeminarsEntity> allSeminars = seminarService.getAll(request);
             session.setAttribute("allSeminars", allSeminars);
             setForwardPage(request, page);

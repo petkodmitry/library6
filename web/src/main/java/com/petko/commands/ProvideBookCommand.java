@@ -25,7 +25,7 @@ public class ProvideBookCommand extends AbstractCommand {
     public void execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        if (userService.isAdminUser(request, login)) {
+        if (userService.isAdminUser(/*request,*/ login)) {
             Integer orderId = Integer.parseInt(request.getParameter("orderId"));
             orderService.provideBook(request, orderId);
             WaitingOrdersCommand.getInstance().execute(request, response);

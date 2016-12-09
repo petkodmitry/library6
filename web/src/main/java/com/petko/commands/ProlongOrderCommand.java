@@ -1,7 +1,5 @@
 package com.petko.commands;
 
-import com.petko.services.OrderService;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;

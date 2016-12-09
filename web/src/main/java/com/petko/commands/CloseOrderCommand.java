@@ -26,7 +26,7 @@ public class CloseOrderCommand extends AbstractCommand{
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
 
-        if (userService.isAdminUser(request, login)) {
+        if (userService.isAdminUser(/*request,*/ login)) {
             int orderId = Integer.parseInt(request.getParameter("orderId"));
             String status = orderService.getById(request, orderId).getStatus();
             orderService.closeOrder(request, null, orderId);

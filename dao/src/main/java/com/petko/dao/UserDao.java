@@ -16,11 +16,6 @@ import java.util.Set;
 public class UserDao extends BaseDao<UsersEntity> implements IUserDao {
     private static Logger log = Logger.getLogger(UserDao.class);
 
-//    @Autowired
-//    public UserDao(SessionFactory sessionFactory) {
-//        super(sessionFactory);
-//    }
-
     /**
      * gets User by his Login
      * @param login of searched User

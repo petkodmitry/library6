@@ -16,11 +16,6 @@ import java.util.List;
 public class SeminarDao extends BaseDao<SeminarsEntity> implements ISeminarDao {
     private static Logger log = Logger.getLogger(SeminarDao.class);
 
-//    @Autowired
-//    public SeminarDao(SessionFactory sessionFactory) {
-//        super(sessionFactory);
-//    }
-
     /**
      * all seminars of a User
      * @param login - desired User

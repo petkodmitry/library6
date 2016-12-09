@@ -4,6 +4,7 @@ import com.petko.managers.ResourceManager;
 import com.petko.constants.Constants;
 import com.petko.entities.SeminarsEntity;
 import com.petko.services.SeminarService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,6 +13,8 @@ import java.util.List;
 
 public class ChooseSeminarsCommand extends AbstractCommand{
     private static ChooseSeminarsCommand instance;
+    @Autowired
+    private ResourceManager resourceManager;
 
     private ChooseSeminarsCommand() {
     }
@@ -27,7 +30,7 @@ public class ChooseSeminarsCommand extends AbstractCommand{
     public void execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        String page = ResourceManager.getInstance().getProperty(Constants.PAGE_CHOOSE_SEMINARS);
+        String page = resourceManager.getProperty(Constants.PAGE_CHOOSE_SEMINARS);
         List<SeminarsEntity> availableSeminarsList;
         availableSeminarsList = seminarService.availableSeminarsForLogin(request, login);
         session.setAttribute("availableSeminars", availableSeminarsList);

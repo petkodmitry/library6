@@ -5,6 +5,7 @@ import com.petko.constants.Constants;
 import com.petko.entities.OrderStatus;
 import com.petko.services.OrderService;
 import com.petko.vo.FullOrdersList;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +14,8 @@ import java.util.List;
 
 public class MyBooksCommand extends AbstractCommand{
     private static MyBooksCommand instance;
+    @Autowired
+    private ResourceManager resourceManager;
 
     private MyBooksCommand() {
     }
@@ -28,7 +31,7 @@ public class MyBooksCommand extends AbstractCommand{
     public void execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        String page = ResourceManager.getInstance().getProperty(Constants.PAGE_MY_BOOKS);
+        String page = resourceManager.getProperty(Constants.PAGE_MY_BOOKS);
         List<FullOrdersList> myBooksList;
         myBooksList = orderService.getOrdersByLoginAndStatus(request, login, OrderStatus.ON_HAND);
         session.setAttribute("myBooksList", myBooksList);

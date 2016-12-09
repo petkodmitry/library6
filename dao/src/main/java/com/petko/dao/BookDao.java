@@ -15,12 +15,7 @@ import java.util.Set;
 @Repository
 public class BookDao extends BaseDao<BooksEntity> implements IBookDao {
     private static Logger log = Logger.getLogger(BookDao.class);
-    private SessionFactory sessionFactory;
-
-//    @Autowired
-//    public BookDao(SessionFactory sessionFactory) {
-//        super(sessionFactory);
-//    }
+//    private SessionFactory sessionFactory;
 
     /**
      *
@@ -31,7 +26,7 @@ public class BookDao extends BaseDao<BooksEntity> implements IBookDao {
     public List<BooksEntity> getAllByCoupleIds(Set<Integer> ids) throws DaoException {
         List<BooksEntity> result;
         try {
-            session = util.getSession();
+            session = sessionFactory.getCurrentSession();
             String hql = "SELECT B FROM BooksEntity B WHERE B.bookId IN :idsParam";
             Query query = session.createQuery(hql);
             query.setParameterList("idsParam", ids);

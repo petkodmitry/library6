@@ -1,59 +1,78 @@
 package com.petko.managers;
 
-import com.petko.commands.AbstractCommand;
+import com.petko.constants.Constants;
+import com.petko.entities.UsersEntity;
 import com.petko.services.IUserService;
-import org.aspectj.bridge.ICommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.*;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import java.util.Enumeration;
 
 @Controller
-@RequestMapping/*("/controller")*/
+@RequestMapping(value = "/controller")
 public class GlobalController {
+    private final String errorMessageAttribute = Constants.ERROR_MESSAGE_ATTRIBUTE;
+//    private final String forwardPageAttribute = Constants.FORWARD_PAGE_ATTRIBUTE;
+    private ModelMap modelMap = new ModelMap();
 
     @Autowired
     private IUserService userService;
     @Autowired
-    private AbstractCommand loginCommand;
+    private ResourceManager resourceManager;
 
-    @RequestMapping("controller")
-//    @RequestMapping
-    /*protected ModelAndView handleRequestInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
-        ModelAndView view;
-        String command = httpServletRequest.getParameter("cmd");
-        String login = httpServletRequest.getParameter("login");
-        String password = httpServletRequest.getParameter("password");
-        if (userService.isAdminUser(httpServletRequest, login)) {
-            view = new ModelAndView("mainadmin");
-        } else {
-            view = new ModelAndView("main");
+    @RequestMapping(value = "/login", method = {RequestMethod.POST, RequestMethod.GET})
+//    public String login(/*@RequestParam Map<String,String> allRequestParams, */ModelMap modelMap, HttpSession session,
+    public String login(ModelMap modelMap, HttpSession session, String login, String password){
+//    public String login(ModelMap modelMap, HttpSession session, @Valid UsersEntity usersEntity, BindingResult br){
+        this.modelMap = modelMap;
+        /*String login = allRequestParams.get("login");
+        String password = allRequestParams.get("password");*/
+
+        /*String login = "", password = "";
+        if (!br.hasErrors()) {
+            login = usersEntity.getLogin();
+            password = usersEntity.getPassword();
+        }*/
+
+        // TODO перенести в какой-нибудь отдельный метод, а лучше фильтр
+        Enumeration<String> attributesNames = session.getAttributeNames();
+        while (attributesNames.hasMoreElements()) {
+            String attr = attributesNames.nextElement();
+            if (!"user".equals(attr)) session.removeAttribute(attr);
         }
-        view.addObject("user", login);
-        // TODO - проверка логина/пароля
-        return view;
-    }*/
-    protected ModelAndView handleRequestInternal(ModelAndView view, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
-//        ModelAndView view;
-        loginCommand.execute(httpServletRequest, httpServletResponse);
-        return view;
+
+        if (session.getAttribute("user") != null) {
+            login = (String) session.getAttribute("user");
+            return redirectToMainPage(login);
+        } else if (!"".equals(login) && userService.isLoginSuccess(login, password)) {
+            session.setAttribute("user", login);
+            return redirectToMainPage(login);
+        } else {
+            if ((modelMap.get(errorMessageAttribute)) == null && login != null && !"".equals(login)) {
+                modelMap.addAttribute(errorMessageAttribute, "Неверный логин или пароль!");
+            }
+            return resourceManager.getProperty(Constants.PAGE_INDEX);
+        }
     }
 
-    /*@RequestMapping("controller?cmd=showUsers")
-//    @RequestMapping
-    protected ModelAndView handleRequestInternal2(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
-        ModelAndView view;
-        String command = httpServletRequest.getParameter("cmd");
-        String login = httpServletRequest.getParameter("login");
-        String password = httpServletRequest.getParameter("password");
-        if (userService.isAdminUser(httpServletRequest, login)) {
-            view = new ModelAndView("mainadmin");
+    private /*void*/ String redirectToMainPage(String login) {
+        String page;
+        if (userService.isAdminUser(login)) {
+            page = resourceManager.getProperty(Constants.PAGE_MAIN_ADMIN);
         } else {
-            view = new ModelAndView("main");
+            page = resourceManager.getProperty(Constants.PAGE_MAIN);
         }
-        view.addObject("user", login);
-        return view;
-    }*/
+//        setForwardPage(page);
+        return page;
+    }
+
+    private /*void*/ String setForwardPage(String page) {
+//        modelMap.addAttribute(forwardPageAttribute, page);
+        return page;
+    }
 }

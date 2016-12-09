@@ -8,16 +8,16 @@
 <body>
 <H3>Добро пожаловать, ${user}!</H3><HR>
 Вы вошли в систему как АДМИНИСТРАТОР<BR><BR>
-<a href="controller?cmd=login">На главную</a><BR>
-<a href="controller?cmd=showUsers">Список пользователей</a><BR>
-<a href="controller?cmd=register">Добавить пользователя</a><BR>
-<a href="controller?cmd=waitingOrders">Ожидающие заказы</a><BR>
-<a href="controller?cmd=openedOrders">Открытые заказы</a><BR>
-<a href="controller?cmd=expiredOrders">Просроченные заказы</a><BR>
-<a href="controller?cmd=blacklist">Черный список</a><BR>
-<a href="controller?cmd=searchBookAdmin">Управление книгами</a><BR>
-<a href="controller?cmd=adminSeminars">Управление семинарами</a><BR>
-<BR><a href="controller?cmd=logout">Выход</a><BR>
+<a href="login">На главную</a><BR>
+<a href="showUsers">Список пользователей</a><BR>
+<a href="register">Добавить пользователя</a><BR>
+<a href="waitingOrders">Ожидающие заказы</a><BR>
+<a href="openedOrders">Открытые заказы</a><BR>
+<a href="expiredOrders">Просроченные заказы</a><BR>
+<a href="blacklist">Черный список</a><BR>
+<a href="searchBookAdmin">Управление книгами</a><BR>
+<a href="adminSeminars">Управление семинарами</a><BR>
+<BR><a href="logout">Выход</a><BR>
 <c:if test="${requestScope['errorMessage'] != null}">
     <BR>Ошибка: ${errorMessage}
 </c:if>

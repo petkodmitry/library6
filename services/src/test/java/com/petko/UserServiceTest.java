@@ -86,7 +86,7 @@ public class UserServiceTest {
         userService.logOut(null, null);
     }
 
-    @Test
+    /*@Test
     public void testIsLoginSuccess1() throws DaoException {
         boolean result = userService.isLoginSuccess(null, null, null);
         Assert.assertTrue(!result);
@@ -118,7 +118,7 @@ public class UserServiceTest {
         UsersEntity entity = userDao.getById(userId);
         boolean result = userService.isAdminUser(request, entity.getLogin());
         Assert.assertTrue(!result);
-    }
+    }*/
 
     @Test
     public void testIsLoginExists1() {

@@ -1,7 +1,6 @@
 package com.petko.services;
 
 import com.petko.DaoException;
-import com.petko.ExceptionsHandler;
 import com.petko.constants.Constants;
 import com.petko.dao.*;
 import com.petko.entities.*;
@@ -59,7 +58,7 @@ public class OrderService implements IOrderService {
             log.info("Get orders by login and status (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
             return Collections.emptyList();
         } finally {
             util.releaseSession(currentSession);
@@ -103,7 +102,7 @@ public class OrderService implements IOrderService {
             log.info("Get orders by status and endDate (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
             return Collections.emptyList();
         } finally {
             util.releaseSession(currentSession);
@@ -141,7 +140,7 @@ public class OrderService implements IOrderService {
             transaction.commit();
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
         } finally {
             util.releaseSession(currentSession);
         }
@@ -202,7 +201,7 @@ public class OrderService implements IOrderService {
             log.info("Get orders by login, bookId and statuses (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
         } finally {
             util.releaseSession(currentSession);
         }
@@ -258,7 +257,7 @@ public class OrderService implements IOrderService {
             log.info("Get order by id (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
         } finally {
             util.releaseSession(currentSession);
         }
@@ -317,7 +316,7 @@ public class OrderService implements IOrderService {
             log.info("Get order by id (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
         } finally {
             util.releaseSession(currentSession);
         }
@@ -335,7 +334,7 @@ public class OrderService implements IOrderService {
             log.info("Get order by id (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
         } finally {
             util.releaseSession(currentSession);
         }

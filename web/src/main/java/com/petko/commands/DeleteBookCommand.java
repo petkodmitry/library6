@@ -27,7 +27,7 @@ public class DeleteBookCommand extends AbstractCommand {
     public void execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        if (userService.isAdminUser(request, login)) {
+        if (userService.isAdminUser(/*request,*/ login)) {
             Integer bookId = Integer.parseInt(request.getParameter("bookId"));
             BooksEntity book = bookService.deleteBook(request, bookId);
 

@@ -23,7 +23,7 @@ public class UnblockUserCommand extends AbstractCommand {
     public void execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        if (userService.isAdminUser(request, login)) {
+        if (userService.isAdminUser(/*request,*/ login)) {
             String userLogin = request.getParameter("login");
             userService.setBlockUser(request, userLogin, false);
             BlackListCommand.getInstance().execute(request, response);

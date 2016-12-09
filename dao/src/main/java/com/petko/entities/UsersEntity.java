@@ -130,7 +130,6 @@ public class UsersEntity extends Entity {
      * @return isBlocked
      */
     @Basic
-//    @Type(type = "org.hibernate.type.NumericBooleanType")
     @Type(type = "yes_no")
     @Column(name = "isblocked", nullable = true)
     public Boolean getIsBlocked() {

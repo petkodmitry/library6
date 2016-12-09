@@ -18,11 +18,6 @@ import java.util.List;
 public class OrderDao extends BaseDao<OrdersEntity> implements IOrderDao {
     private static Logger log = Logger.getLogger(OrderDao.class);
 
-//    @Autowired
-//    public OrderDao(SessionFactory sessionFactory) {
-//        super(sessionFactory);
-//    }
-
     /**
      * all Orders of a User by specific Status
      * @param login - desired login

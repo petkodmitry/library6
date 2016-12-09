@@ -18,6 +18,8 @@ public abstract class AbstractCommand implements Command{
     protected ISeminarService seminarService;
     @Autowired
     protected IUserService userService;
+    @Autowired
+    private ResourceManager resourceManager;
 
     public void setErrorMessage(HttpServletRequest request, String message) {
         request.setAttribute(errorMessageAttribute, message);
@@ -29,16 +31,16 @@ public abstract class AbstractCommand implements Command{
 
     /*protected*/ public void redirectToMainPage(HttpServletRequest request, String login) {
         String page;
-        if (userService.isAdminUser(request, login)) {
-            page = ResourceManager.getInstance().getProperty(Constants.PAGE_MAIN_ADMIN);
+        if (userService.isAdminUser(/*request, */login)) {
+            page = resourceManager.getProperty(Constants.PAGE_MAIN_ADMIN);
         } else {
-            page = ResourceManager.getInstance().getProperty(Constants.PAGE_MAIN);
+            page = resourceManager.getProperty(Constants.PAGE_MAIN);
         }
         setForwardPage(request, page);
     }
 
     protected void redirectToLoginPage(HttpServletRequest request) {
-        String page = ResourceManager.getInstance().getProperty(Constants.PAGE_INDEX);
+        String page = resourceManager.getProperty(Constants.PAGE_INDEX);
         setForwardPage(request, page);
     }
 }

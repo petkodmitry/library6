@@ -4,6 +4,7 @@ import com.petko.managers.ResourceManager;
 import com.petko.constants.Constants;
 import com.petko.entities.UsersEntity;
 import com.petko.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,6 +13,8 @@ import java.util.List;
 
 public class ShowUsersCommand extends AbstractCommand {
     private static ShowUsersCommand instance;
+    @Autowired
+    private ResourceManager resourceManager;
 
     private ShowUsersCommand() {}
 
@@ -26,11 +29,11 @@ public class ShowUsersCommand extends AbstractCommand {
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
         // если админ, то выполняем команду
-        if (userService.isAdminUser(request, login)) {
+        if (userService.isAdminUser(/*request,*/ login)) {
             List<UsersEntity> userSet = userService.getAll(request);
             if (userSet.isEmpty()) setErrorMessage(request, "Не удалось получить список пользователей");
             request.setAttribute(Constants.USER_SET, userSet);
-            String page = ResourceManager.getInstance().getProperty(Constants.PAGE_SHOW_USERS);
+            String page = resourceManager.getProperty(Constants.PAGE_SHOW_USERS);
             setForwardPage(request, page);
         // если не админ, сообщаем о невозможности выполнения команды
         } else if ((request.getAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE)) == null) {

@@ -1,14 +1,15 @@
 package com.petko.services;
 
+import com.petko.DaoException;
 import com.petko.entities.UsersEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface IUserService {
-    boolean isLoginSuccess(HttpServletRequest request, String login, String password);
+    boolean isLoginSuccess(/*HttpServletRequest request, */String login, String password);
 
-    boolean isAdminUser(HttpServletRequest request, String login);
+    boolean isAdminUser(/*HttpServletRequest request, */String login);
 
     List<UsersEntity> getAll(HttpServletRequest request);
 

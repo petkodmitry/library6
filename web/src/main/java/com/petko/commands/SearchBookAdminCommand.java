@@ -5,6 +5,7 @@ import com.petko.constants.Constants;
 import com.petko.entities.BooksEntity;
 import com.petko.services.BookService;
 import com.petko.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +14,8 @@ import java.util.List;
 
 public class SearchBookAdminCommand extends AbstractCommand {
     private static SearchBookAdminCommand instance;
+    @Autowired
+    private ResourceManager resourceManager;
 
     private SearchBookAdminCommand() {}
 
@@ -27,9 +30,9 @@ public class SearchBookAdminCommand extends AbstractCommand {
     public void execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        String page = ResourceManager.getInstance().getProperty(Constants.PAGE_SEARCH_BOOK_ADMIN);
+        String page = resourceManager.getProperty(Constants.PAGE_SEARCH_BOOK_ADMIN);
 
-        if (userService.isAdminUser(request, login)) {
+        if (userService.isAdminUser(/*request,*/ login)) {
             String searchTextInBook;
             if ((searchTextInBook = request.getParameter("searchTextInBook")) != null && !"".equals(searchTextInBook)) {
                 List<BooksEntity> searchBookAdmin = bookService.searchBooksByTitleOrAuthor(request, searchTextInBook, login);

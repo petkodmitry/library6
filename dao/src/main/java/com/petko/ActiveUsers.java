@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 public class ActiveUsers {
-    private static HashSet<String> connectedUsers = new LinkedHashSet<String>();
+    private static HashSet<String> connectedUsers = new LinkedHashSet<>();
 
     /**
      * gives Set of connected Users

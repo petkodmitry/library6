@@ -1,7 +1,6 @@
 package com.petko.services;
 
 import com.petko.DaoException;
-import com.petko.ExceptionsHandler;
 import com.petko.constants.Constants;
 import com.petko.dao.ISeminarDao;
 import com.petko.dao.IUserDao;
@@ -47,7 +46,7 @@ public class SeminarService implements ISeminarService {
             log.info("Get seminars by login (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
         } finally {
             util.releaseSession(currentSession);
         }
@@ -77,7 +76,7 @@ public class SeminarService implements ISeminarService {
             log.info("Get seminar by id (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
         } finally {
             util.releaseSession(currentSession);
         }
@@ -105,7 +104,7 @@ public class SeminarService implements ISeminarService {
             log.info("Get seminar by id (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
         } finally {
             util.releaseSession(currentSession);
         }
@@ -133,7 +132,7 @@ public class SeminarService implements ISeminarService {
             log.info("Get seminars by login (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
         } finally {
             util.releaseSession(currentSession);
         }
@@ -159,7 +158,7 @@ public class SeminarService implements ISeminarService {
             log.info("Get all seminars >= today (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
         } finally {
             util.releaseSession(currentSession);
         }
@@ -184,7 +183,7 @@ public class SeminarService implements ISeminarService {
             log.info("Add seminar to DB (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
         } finally {
             util.releaseSession(currentSession);
         }
@@ -215,7 +214,7 @@ public class SeminarService implements ISeminarService {
             log.info("Delete seminar from DB (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
         } finally {
             util.releaseSession(currentSession);
         }
@@ -241,7 +240,7 @@ public class SeminarService implements ISeminarService {
             log.info("Get seminar by id (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
         } finally {
             util.releaseSession(currentSession);
         }

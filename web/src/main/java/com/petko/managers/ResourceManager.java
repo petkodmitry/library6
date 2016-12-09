@@ -1,16 +1,12 @@
 package com.petko.managers;
 
+import org.springframework.stereotype.Component;
+
 import java.util.ResourceBundle;
 
+@Component
 public class ResourceManager {
     private final ResourceBundle bundle = ResourceBundle.getBundle("config");
-    private static ResourceManager ourInstance = new ResourceManager();
-
-    private ResourceManager() {}
-
-    public static ResourceManager getInstance() {
-        return ourInstance;
-    }
 
     public String getProperty(String key){
         return bundle.getString(key);

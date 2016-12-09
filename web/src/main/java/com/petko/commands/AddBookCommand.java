@@ -5,6 +5,7 @@ import com.petko.constants.Constants;
 import com.petko.entities.BooksEntity;
 import com.petko.services.BookService;
 import com.petko.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,6 +13,9 @@ import javax.servlet.http.HttpSession;
 
 public class AddBookCommand extends AbstractCommand {
     private static AddBookCommand instance;
+
+    @Autowired
+    private ResourceManager resourceManager;
 
     private AddBookCommand() {}
 
@@ -26,9 +30,9 @@ public class AddBookCommand extends AbstractCommand {
     public void execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        if (userService.isAdminUser(request, login)) {
+        if (userService.isAdminUser(/*request,*/ login)) {
             BooksEntity regData = (BooksEntity) session.getAttribute("regData");
-            String page = ResourceManager.getInstance().getProperty(Constants.PAGE_ADD_BOOK);
+            String page = resourceManager.getProperty(Constants.PAGE_ADD_BOOK);
             if (regData == null) {
                 regData = new BooksEntity();
                 session.setAttribute("regData", regData);

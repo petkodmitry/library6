@@ -5,6 +5,7 @@ import com.petko.constants.Constants;
 import com.petko.entities.SeminarsEntity;
 import com.petko.services.SeminarService;
 import com.petko.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,6 +16,8 @@ import java.util.Date;
 
 public class AddSeminarCommand extends AbstractCommand {
     private static AddSeminarCommand instance;
+    @Autowired
+    private ResourceManager resourceManager;
 
     private AddSeminarCommand() {}
 
@@ -29,9 +32,9 @@ public class AddSeminarCommand extends AbstractCommand {
     public void execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        if (userService.isAdminUser(request, login)) {
+        if (userService.isAdminUser(/*request,*/ login)) {
             SeminarsEntity regData = (SeminarsEntity) session.getAttribute("regData");
-            String page = ResourceManager.getInstance().getProperty(Constants.PAGE_ADD_SEMINAR);
+            String page = resourceManager.getProperty(Constants.PAGE_ADD_SEMINAR);
             if (regData == null) {
                 regData = new SeminarsEntity();
                 session.setAttribute("regData", regData);

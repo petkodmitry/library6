@@ -2,7 +2,7 @@ package com.petko.services;
 
 import com.petko.ActiveUsers;
 import com.petko.DaoException;
-import com.petko.ExceptionsHandler;
+import com.petko.dao.Dao;
 import com.petko.dao.IUserDao;
 import com.petko.entities.UsersEntity;
 import com.petko.utils.HibernateUtilLibrary;
@@ -11,33 +11,25 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.*;
 
 @Service
-@Transactional
 public class UserService implements IUserService {
     private static Logger log = Logger.getLogger(UserService.class);
-    private SessionFactory sessionFactory;
     @Autowired
     private IUserDao userDao;
     @Autowired
-    private TransactionTemplate transactionTemplate;
+    private Dao baseDao;
+    @Autowired
+    private HibernateTransactionManager transactionManager;
     @Autowired
     private HibernateUtilLibrary util/* = HibernateUtilLibrary.getHibernateUtil()*/;
-
-    @Autowired
-    public UserService(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-//        this.session = sessionFactory.openSession();
-    }
 
     /**
      * Adds into active users List
@@ -67,23 +59,22 @@ public class UserService implements IUserService {
 
     /**
      * Checks if user is already logged in
-     * @param request - current http request
+//     * @param request - current http request
      * @param login to be checked
      * @param password to be checked
      * @return succes or not
      */
-    /**
-    public boolean isLoginSuccess(HttpServletRequest request, String login, String password) {
+    @Transactional(readOnly = true, rollbackFor = DaoException.class)
+    public boolean isLoginSuccess(/*HttpServletRequest request, */String login, String password) {
         if (login == null || password == null) return false;
-        Session currentSession = null;
-        Transaction transaction = null;
         try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
+
+            //////////////////////////////////////////////////
+            SessionFactory sessionFactory = transactionManager.getSessionFactory();
+            Session session = sessionFactory.getCurrentSession();
+            //////////////////////////////////////////////////
 
             UsersEntity user = userDao.getByLogin(login);
-
-            transaction.commit();
             log.info("Get user by login (commit)");
             if (user != null && password.equals(user.getPassword())) {
                 addToActiveUsers(login);
@@ -91,16 +82,12 @@ public class UserService implements IUserService {
             } else {
                 return false;
             }
-        } catch (DaoException e) {
-            transaction.rollback();
-            ExceptionsHandler.processException(request, e);
-            return false;
-        } finally {
-            util.releaseSession(currentSession);
-        }
+        } catch (DaoException e) { return false; }
     }
-    */
-    public boolean isLoginSuccess(HttpServletRequest request, String login, String password) {
+
+    /**
+    @Transactional(readOnly = true, rollbackFor = DaoException.class)
+    public boolean isLoginSuccess(*//*HttpServletRequest request, *//*String login, String password) {
         if (login == null || password == null) return false;
         return transactionTemplate.execute(new TransactionCallback<Boolean>() {
             @Override
@@ -116,12 +103,12 @@ public class UserService implements IUserService {
                     }
                 } catch (DaoException e) {
                     transactionStatus.setRollbackOnly();
-                    ExceptionsHandler.processException(request, e);
+//                    ExceptionsHandler.processException(request, e);
                     return false;
                 }
             }
         });
-    }
+    }*/
 
     /**
      * Checks if the User is Admin or not
@@ -148,18 +135,19 @@ public class UserService implements IUserService {
         }
         return result;
     }*/
-    public boolean isAdminUser(HttpServletRequest request, String login) {
-        return transactionTemplate.execute(transactionStatus -> {
+    @Transactional(readOnly = true, rollbackFor = DaoException.class)
+    public boolean isAdminUser(/*HttpServletRequest request, */String login) {
+//        return transactionTemplate.execute(transactionStatus -> {
             try {
                 UsersEntity user = userDao.getByLogin(login);
                 if (user != null) return user.getIsAdmin();
                 else return false;
             } catch (DaoException e) {
-                transactionStatus.setRollbackOnly();
-                ExceptionsHandler.processException(request, e);
+//                transactionStatus.setRollbackOnly();
+//                ExceptionsHandler.processException(request, e);
                 return false;
             }
-        });
+//        });
     }
 
     /**
@@ -230,7 +218,7 @@ public class UserService implements IUserService {
             log.info("getAll users (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
         }  finally {
             util.releaseSession(currentSession);
         }
@@ -307,7 +295,7 @@ public class UserService implements IUserService {
             log.info("Get user by login (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
         }  finally {
             util.releaseSession(currentSession);
         }
@@ -342,7 +330,7 @@ public class UserService implements IUserService {
             log.info("Save user to DB (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
         } finally {
             util.releaseSession(currentSession);
         }
@@ -372,7 +360,7 @@ public class UserService implements IUserService {
             log.info("Update user (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
         }  finally {
             util.releaseSession(currentSession);
         }
@@ -397,7 +385,7 @@ public class UserService implements IUserService {
             log.info("Get all users by block status (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
             return Collections.emptyList();
         }  finally {
             util.releaseSession(currentSession);
@@ -446,7 +434,7 @@ public class UserService implements IUserService {
             }
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
             return null;
         } finally {
             util.releaseSession(currentSession);

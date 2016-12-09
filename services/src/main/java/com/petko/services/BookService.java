@@ -1,7 +1,6 @@
 package com.petko.services;
 
 import com.petko.DaoException;
-import com.petko.ExceptionsHandler;
 import com.petko.dao.IBookDao;
 import com.petko.dao.IUserDao;
 import com.petko.entities.BooksEntity;
@@ -33,7 +32,7 @@ public class BookService implements IBookService {
      */
     public List<BooksEntity> searchBooksByTitleOrAuthor(HttpServletRequest request, String searchTextInBook, String login) {
         List<BooksEntity> result = new ArrayList<>();
-        boolean isUserAdmin = userService.isAdminUser(request, login);
+        boolean isUserAdmin = userService.isAdminUser(/*request,*/ login);
         Session currentSession = null;
         Transaction transaction = null;
         try {
@@ -48,7 +47,7 @@ public class BookService implements IBookService {
             log.info("Search books by (login or title) and status (commit)");
         } catch (DaoException | NullPointerException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
             return Collections.emptyList();
         } finally {
             util.releaseSession(currentSession);
@@ -99,7 +98,7 @@ public class BookService implements IBookService {
             }
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
             return null;
         } finally {
             util.releaseSession(currentSession);
@@ -125,7 +124,7 @@ public class BookService implements IBookService {
             log.info("Save book (commit)");
         } catch (DaoException e) {
             transaction.rollback();
-            ExceptionsHandler.processException(request, e);
+//            ExceptionsHandler.processException(request, e);
         } finally {
             util.releaseSession(currentSession);
         }

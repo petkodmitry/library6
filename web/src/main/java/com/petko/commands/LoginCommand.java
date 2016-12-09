@@ -32,7 +32,7 @@ public class LoginCommand extends AbstractCommand {
         if (session.getAttribute("user") != null) {
             login = (String) session.getAttribute("user");
             redirectToMainPage(request, login);
-        } else if (!"".equals(login) && userService.isLoginSuccess(request, login, password)) {
+        } else if (!"".equals(login) && userService.isLoginSuccess(/*request, */login, password)) {
             session.setAttribute("user", login);
             redirectToMainPage(request, login);
         } else {

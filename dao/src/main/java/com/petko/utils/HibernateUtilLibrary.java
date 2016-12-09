@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
+//import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ public class HibernateUtilLibrary {
     private static SessionFactory sessionFactory = null;
     private static ThreadLocal<Session> sessions = new ThreadLocal<>();
 
-    private HibernateUtilLibrary() {
+    /*private HibernateUtilLibrary() {
         try {
             Configuration configuration = new Configuration().configure();
             StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder()
@@ -25,7 +25,7 @@ public class HibernateUtilLibrary {
             log.error("Initial SessionFactory creation failed. " + ex);
             System.exit(0);
         }
-    }
+    }*/
 
     /**
      * gives a session from the sessionFactory
