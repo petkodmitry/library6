@@ -4,6 +4,7 @@ import com.petko.constants.Constants;
 import com.petko.entities.BooksEntity;
 import com.petko.services.BookService;
 import com.petko.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,16 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DeleteBookCommand extends AbstractCommand {
-    private static DeleteBookCommand instance;
-
-    private DeleteBookCommand() {}
-
-    public static synchronized DeleteBookCommand getInstance() {
-        if (instance == null) {
-            instance = new DeleteBookCommand();
-        }
-        return instance;
-    }
+    @Autowired
+    private SearchBookAdminCommand searchBookAdminCommand;
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
@@ -29,13 +22,13 @@ public class DeleteBookCommand extends AbstractCommand {
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(/*request,*/ login)) {
             Integer bookId = Integer.parseInt(request.getParameter("bookId"));
-            BooksEntity book = bookService.deleteBook(request, bookId);
+            BooksEntity book = bookService.deleteBook(bookId);
 
             if (book != null) request.setAttribute("info", "Книга с ID " + bookId + " успешно удалена");
             List<BooksEntity> searchBookAdmin = (ArrayList<BooksEntity>) session.getAttribute("searchBookAdmin");
             if (searchBookAdmin != null) searchBookAdmin.remove(book);
 
-            SearchBookAdminCommand.getInstance().execute(request, response);
+            searchBookAdminCommand.execute(request, response);
         // если не админ, сообщаем о невозможности выполнения команды
         } else if ((request.getAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE)) == null) {
             setErrorMessage(request, "У Вас нет прав для выполнения данной команды");

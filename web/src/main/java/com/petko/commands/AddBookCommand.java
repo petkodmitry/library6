@@ -12,19 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 public class AddBookCommand extends AbstractCommand {
-    private static AddBookCommand instance;
-
     @Autowired
     private ResourceManager resourceManager;
-
-    private AddBookCommand() {}
-
-    public static synchronized AddBookCommand getInstance() {
-        if (instance == null) {
-            instance = new AddBookCommand();
-        }
-        return instance;
-    }
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
@@ -43,7 +32,7 @@ public class AddBookCommand extends AbstractCommand {
                 regData.setAuthor(author);
                 if (title != null && author != null && !"".equals(title) && !"".equals(author)) {
                     regData.setIsBusy(false);
-                    bookService.add(request, regData);
+                    bookService.add(regData);
                     request.setAttribute("info", "Книга добавлена в базу библиотеки");
                     regData.setTitle("");
                     regData.setAuthor("");

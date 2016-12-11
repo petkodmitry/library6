@@ -12,18 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 public class UsersOfSeminarCommand extends AbstractCommand {
-    private static UsersOfSeminarCommand instance;
     @Autowired
     private ResourceManager resourceManager;
-
-    private UsersOfSeminarCommand() {}
-
-    public static synchronized UsersOfSeminarCommand getInstance() {
-        if (instance == null) {
-            instance = new UsersOfSeminarCommand();
-        }
-        return instance;
-    }
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
@@ -33,7 +23,7 @@ public class UsersOfSeminarCommand extends AbstractCommand {
 
         if (userService.isAdminUser(/*request,*/ login)) {
             Integer seminarId = Integer.parseInt(request.getParameter("seminarId"));
-            SeminarsEntity seminarEntity = seminarService.getById(request, seminarId);
+            SeminarsEntity seminarEntity = seminarService.getById(seminarId);
             session.setAttribute("seminarEntity", seminarEntity);
             setForwardPage(request, page);
         // если не админ, сообщаем о невозможности выполнения команды

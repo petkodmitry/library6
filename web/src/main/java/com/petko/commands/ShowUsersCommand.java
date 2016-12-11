@@ -12,25 +12,15 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 
 public class ShowUsersCommand extends AbstractCommand {
-    private static ShowUsersCommand instance;
     @Autowired
     private ResourceManager resourceManager;
-
-    private ShowUsersCommand() {}
-
-    public static synchronized ShowUsersCommand getInstance() {
-        if(instance == null){
-            instance = new ShowUsersCommand();
-        }
-        return instance;
-    }
 
     public void execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
         // если админ, то выполняем команду
         if (userService.isAdminUser(/*request,*/ login)) {
-            List<UsersEntity> userSet = userService.getAll(request);
+            List<UsersEntity> userSet = userService.getAll(null, session);
             if (userSet.isEmpty()) setErrorMessage(request, "Не удалось получить список пользователей");
             request.setAttribute(Constants.USER_SET, userSet);
             String page = resourceManager.getProperty(Constants.PAGE_SHOW_USERS);

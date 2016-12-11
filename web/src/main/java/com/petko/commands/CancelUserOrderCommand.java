@@ -1,30 +1,22 @@
 package com.petko.commands;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 public class CancelUserOrderCommand extends AbstractCommand{
-    private static CancelUserOrderCommand instance;
-
-    private CancelUserOrderCommand() {
-    }
-
-    public static synchronized CancelUserOrderCommand getInstance() {
-        if (instance == null) {
-            instance = new CancelUserOrderCommand();
-        }
-        return instance;
-    }
-
+    @Autowired
+    private MyOrdersCommand myOrdersCommand;
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
         int orderId = Integer.parseInt(request.getParameter("orderId"));
-        orderService.closeOrder(request, login, orderId);
+        orderService.closeOrder(login, orderId);
 
-        MyOrdersCommand.getInstance().execute(request, response);
+        myOrdersCommand.execute(request, response);
     }
 }

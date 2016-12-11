@@ -10,12 +10,13 @@
 <HEAD><TITLE>Library login page</TITLE></HEAD>
 <BODY><H3>Введите логин и пароль для входа в библиотеку:</H3>
 <HR>
-<%--<FORM name="loginForm"--%>
-<s:form id="loginForm"
+<FORM name="loginForm"
+<%--<s:form id="loginForm"--%>
         name="usersEntity"
         method="POST"
         action="login"
-        modelAttribute="usersEntity">
+        <%--modelAttribute="usersEntity"--%>
+    >
     <%--<fieldset>
         <label for="login">Login</label>
         <s:input id="login" type="text" value="" maxlength="20" path="login"/><br/>
@@ -23,9 +24,6 @@
         <s:input id="psw" type="password" value="" maxlength="20" path="psw"/><br/>
         <input id="personButton" type="submit" value=""/>
     </fieldset>--%>
-
-
-
     <INPUT type="hidden" name="cmd" value="login">
     Логин:<BR>
     <INPUT type="text"
@@ -41,7 +39,9 @@
     <BUTTON style="position: relative; left: 25px" title="Зарегистрироваться в системе" formaction="register"
             type="submit">Регистрация
     </BUTTON>
-</s:form>
+<%--</s:form>--%>
+</form>
+
 <HR>
 <c:if test="${requestScope['errorMessage'] != null}">
     Ошибка: ${errorMessage}

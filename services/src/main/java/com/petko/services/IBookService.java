@@ -6,9 +6,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface IBookService {
-    void add(HttpServletRequest request, BooksEntity bookEntity);
+    void add(BooksEntity bookEntity);
 
-    BooksEntity deleteBook(HttpServletRequest request, Integer bookId);
+    BooksEntity deleteBook(Integer bookId);
 
-    List<BooksEntity> searchBooksByTitleOrAuthor(HttpServletRequest request, String searchTextInBook, String login);
+    List<BooksEntity> searchBooksByTitleOrAuthor(String searchTextInBook, String login);
 }

@@ -15,6 +15,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -36,12 +37,14 @@ public class OrderServiceTest {
     @Autowired
     private HibernateUtilLibrary util;
     public static HttpServletRequest request;
+    public static ModelMap modelMap;
 
     @BeforeClass
     public static void init() {
 //        orderService = OrderService.getInstance();
 //        orderDao = OrderDao.getInstance();
         request = mock(HttpServletRequest.class);
+        modelMap = mock(ModelMap.class);
     }
 
     private int getTheLastOrderId() throws DaoException {
@@ -72,44 +75,44 @@ public class OrderServiceTest {
 
     @Test(expected = NullPointerException.class)
     public void testGetOrdersByLoginAndStatus1() {
-        orderService.getOrdersByLoginAndStatus(null, null, null);
+        orderService.getOrdersByLoginAndStatus(null, null);
     }
 
     @Test
     public void testGetOrdersByLoginAndStatus2() {
-        List<FullOrdersList> list = orderService.getOrdersByLoginAndStatus(request, null, null);
+        List<FullOrdersList> list = orderService.getOrdersByLoginAndStatus(null, null);
         Assert.assertNotNull(list);
     }
 
     @Test
     public void testGetOrdersByLoginAndStatus3() throws DaoException {
         UsersEntity user = userDao.getById(2);
-        List<FullOrdersList> list = orderService.getOrdersByLoginAndStatus(request, user.getLogin(), OrderStatus.CLOSED);
+        List<FullOrdersList> list = orderService.getOrdersByLoginAndStatus(user.getLogin(), OrderStatus.CLOSED);
         Assert.assertTrue(!list.isEmpty());
     }
 
     @Test
     public void testGetExpiredOrders1() {
-        List<FullOrdersList> list = orderService.getExpiredOrders(null);
+        List<FullOrdersList> list = orderService.getExpiredOrders();
         Assert.assertNotNull(list);
     }
 
     @Test(expected = NullPointerException.class)
     public void testCloseOrder1() {
-        orderService.closeOrder(null, null, -10_000);
+        orderService.closeOrder(null, -10_000);
     }
 
     @Test
     public void testCloseOrder2() throws DaoException {
         OrdersEntity ordersEntity = saveAndGetNewOrderEntity();
-        orderService.closeOrder(request, null, ordersEntity.getOrderId());
+        orderService.closeOrder(null, ordersEntity.getOrderId());
     }
 
     @Test
     public void testCloseOrder3() throws DaoException {
         OrdersEntity ordersEntity = saveAndGetNewOrderEntity();
         ordersEntity.setStatus(OrderStatus.ORDERED.toString());
-        orderService.closeOrder(request, ordersEntity.getLogin(), ordersEntity.getOrderId());
+        orderService.closeOrder(ordersEntity.getLogin(), ordersEntity.getOrderId());
     }
 
     @Test(expected = NullPointerException.class)
@@ -119,12 +122,12 @@ public class OrderServiceTest {
 
     @Test
     public void testOrderToHomeOrToRoom2() {
-        orderService.orderToHomeOrToRoom(request, null, -10_000, null);
+        orderService.orderToHomeOrToRoom(modelMap, null, -10_000, null);
     }
 
     @Test
     public void testOrderToHomeOrToRoom3() {
-        orderService.orderToHomeOrToRoom(request, null, -10_000, true);
+        orderService.orderToHomeOrToRoom(modelMap, null, -10_000, true);
     }
 
     @Test
@@ -146,9 +149,9 @@ public class OrderServiceTest {
                 break;
             }
         }
-        orderService.orderToHomeOrToRoom(request, userLogin, bookId, true);
+        orderService.orderToHomeOrToRoom(modelMap, userLogin, bookId, true);
         int endCountOfOrders = getTheLastOrderId();
-        if (startCountOfOrders != endCountOfOrders) orderService.closeOrder(request, null, getTheLastOrderId());
+        if (startCountOfOrders != endCountOfOrders) orderService.closeOrder(null, getTheLastOrderId());
     }
 
     @Test
@@ -158,14 +161,14 @@ public class OrderServiceTest {
 
     @Test
     public void testProlongOrder2() {
-        orderService.prolongOrder(request, null, -10_000);
+        orderService.prolongOrder(modelMap, null, -10_000);
     }
 
     @Test
     public void testProlongOrder3() throws DaoException {
         OrdersEntity orderEntity = saveAndGetNewOrderEntity();
-        orderService.prolongOrder(request, orderEntity.getLogin(), orderEntity.getOrderId());
-        orderService.closeOrder(request, null, orderEntity.getOrderId());
+        orderService.prolongOrder(modelMap, orderEntity.getLogin(), orderEntity.getOrderId());
+        orderService.closeOrder(null, orderEntity.getOrderId());
     }
 
     @Test(expected = NullPointerException.class)
@@ -175,7 +178,7 @@ public class OrderServiceTest {
 
     @Test
     public void testProvideBook2() {
-        orderService.provideBook(request, -10_000);
+        orderService.provideBook(modelMap, -10_000);
     }
 
     @Test
@@ -200,8 +203,8 @@ public class OrderServiceTest {
         orderEntity.setLogin(userLogin);
         orderEntity.setBookId(bookId);
         orderEntity.setStatus(OrderStatus.ORDERED.toString());
-        orderService.provideBook(request, orderEntity.getOrderId());
-        orderService.closeOrder(request, null, orderEntity.getOrderId());
+        orderService.provideBook(modelMap, orderEntity.getOrderId());
+        orderService.closeOrder(null, orderEntity.getOrderId());
     }
 
     @Test
@@ -211,13 +214,13 @@ public class OrderServiceTest {
 
     @Test
     public void testGetById1() {
-        OrdersEntity entity = orderService.getById(null, -10_000);
+        OrdersEntity entity = orderService.getById(-10_000);
         Assert.assertNull(entity);
     }
 
     @Test
     public void testGetById2() {
-        OrdersEntity entity = orderService.getById(request, -10_000);
+        OrdersEntity entity = orderService.getById(-10_000);
         Assert.assertNull(entity);
     }
 }

@@ -12,7 +12,7 @@
 <HR>
 <FORM name="registerForm"
       method="POST"
-      action="controller">
+      action="">
     <table border="0">
         <tr>
             <td align="right">Логин:</td>
@@ -21,8 +21,8 @@
                        title="Придумайте оригинальный логин"
                        value="${regData.getLogin()}"></td>
             <td>
-                <form method="post" action="controller">
-                    <BUTTON type="submit" formaction="controller?cmd=register" title="Проверить доступность">Доступность</BUTTON>
+                <form method="post" action="">
+                    <BUTTON type="submit" formaction="register" title="Проверить доступность">Доступность</BUTTON>
                 </form>
             </td>
         </tr>
@@ -65,11 +65,11 @@
         </tr>
         <tr style="height: 25px">
             <td>
-                <form method="post" action="controller">
-                    <BUTTON tabindex="-1" type="submit" formaction="controller?cmd=login" title="Назад">Назад</BUTTON>
+                <form method="post" action="">
+                    <BUTTON tabindex="-1" type="submit" formaction="login" title="Назад">Назад</BUTTON>
                 </form>
             </td>
-            <td align="right"><INPUT type="submit" formaction="controller?cmd=register" title="Зарегистрироваться" value="Зарегистрироваться"></td>
+            <td align="right"><INPUT type="submit" formaction="register" title="Зарегистрироваться" value="Зарегистрироваться"></td>
             <td></td>
         </tr>
     </table>

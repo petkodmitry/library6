@@ -10,6 +10,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -21,36 +22,25 @@ public class BookService implements IBookService {
     private IBookDao bookDao;
     @Autowired
     private IUserService userService;
-    @Autowired
-    private HibernateUtilLibrary util/* = HibernateUtilLibrary.getHibernateUtil()*/;
 
     /**
      * searches Books by Title or Author
-     * @param request - current request
      * @param searchTextInBook - text to be searched in Book
      * @return List of Books according conditions
      */
-    public List<BooksEntity> searchBooksByTitleOrAuthor(HttpServletRequest request, String searchTextInBook, String login) {
-        List<BooksEntity> result = new ArrayList<>();
-        boolean isUserAdmin = userService.isAdminUser(/*request,*/ login);
-        Session currentSession = null;
-        Transaction transaction = null;
+    @Override
+    @Transactional(readOnly = true, rollbackFor = DaoException.class)
+    public List<BooksEntity> searchBooksByTitleOrAuthor(String searchTextInBook, String login) {
+        List<BooksEntity> result;
+        boolean isUserAdmin = userService.isAdminUser(login);
         try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
-
             result = bookDao.getBooksByTitleOrAuthorAndStatus(searchTextInBook, null);
             // if User is not Admin, show him only one exemplar
             if (!isUserAdmin) result = showBooksByOneExemplar(result);
-
-            transaction.commit();
             log.info("Search books by (login or title) and status (commit)");
         } catch (DaoException | NullPointerException e) {
-            transaction.rollback();
 //            ExceptionsHandler.processException(request, e);
             return Collections.emptyList();
-        } finally {
-            util.releaseSession(currentSession);
         }
         return result;
     }
@@ -79,54 +69,37 @@ public class BookService implements IBookService {
 
     /**
      * removes Book by book Id
-     * @param request - current request
      * @param bookId - id of the Book to be deleted
      */
-    public BooksEntity deleteBook(HttpServletRequest request, Integer bookId) {
+    @Override
+    @Transactional(readOnly = false, rollbackFor = DaoException.class)
+    public BooksEntity deleteBook(Integer bookId) {
         BooksEntity book;
-        Session currentSession = null;
-        Transaction transaction = null;
         try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
-
             book = bookDao.getById(bookId);
             if (book != null) {
                 bookDao.delete(book);
-                transaction.commit();
                 log.info("Delete book (commit)");
             }
         } catch (DaoException e) {
-            transaction.rollback();
 //            ExceptionsHandler.processException(request, e);
             return null;
-        } finally {
-            util.releaseSession(currentSession);
         }
         return book;
     }
 
     /**
      * adds Book to DataBase
-     * @param request - current request
      * @param bookEntity to be added to DB
      */
-    public void add(HttpServletRequest request, BooksEntity bookEntity) {
-        Session currentSession = null;
-        Transaction transaction = null;
+    @Override
+    @Transactional(readOnly = false, rollbackFor = DaoException.class)
+    public void add(BooksEntity bookEntity) {
         try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
-
             bookDao.save(bookEntity);
-
-            transaction.commit();
             log.info("Save book (commit)");
         } catch (DaoException e) {
-            transaction.rollback();
 //            ExceptionsHandler.processException(request, e);
-        } finally {
-            util.releaseSession(currentSession);
         }
     }
 }

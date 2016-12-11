@@ -11,6 +11,8 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -26,21 +28,16 @@ public class OrderService implements IOrderService {
     private IBookDao bookDao;
     @Autowired
     private IUserDao userDao;
-    @Autowired
-    private HibernateUtilLibrary util/* = HibernateUtilLibrary.getHibernateUtil()*/;
 
     /*** getting orders list by login and order status
-     * @param request     - current http request
      * @param login       - user, whose orders are taken
      * @param orderStatus - with which status orders are taken
      * @return the List of orders according to the conditions */
-    public List<FullOrdersList> getOrdersByLoginAndStatus(HttpServletRequest request, String login, OrderStatus orderStatus) {
+    @Override
+    @Transactional(readOnly = true, rollbackFor = DaoException.class)
+    public List<FullOrdersList> getOrdersByLoginAndStatus(String login, OrderStatus orderStatus) {
         List<FullOrdersList> result = new ArrayList<>();
-        Session currentSession = null;
-        Transaction transaction = null;
         try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
             // getting required List of orders, but without Book details (book ID only)
             List<OrdersEntity> orderEntityList = orderDao.getOrdersByLoginAndStatus(login, orderStatus);
             if (!orderEntityList.isEmpty()) {
@@ -54,29 +51,20 @@ public class OrderService implements IOrderService {
                 result = buildFullOrdersList(orderEntityList, booksMap, null, null);
                 log.info("Get all books by couple ids (commit)");
             }
-            transaction.commit();
             log.info("Get orders by login and status (commit)");
+            return result;
         } catch (DaoException e) {
-            transaction.rollback();
-//            ExceptionsHandler.processException(request, e);
             return Collections.emptyList();
-        } finally {
-            util.releaseSession(currentSession);
         }
-        return result;
     }
 
-    /*** getting expired orders list by endDate
-     * @param request - current http request
-     * @return the List of orders according to the conditions */
-    public List<FullOrdersList> getExpiredOrders(HttpServletRequest request) {
+    // getting expired orders list by endDate
+    @Override
+    @Transactional(readOnly = true, rollbackFor = DaoException.class)
+    public List<FullOrdersList> getExpiredOrders() {
         List<FullOrdersList> result = new ArrayList<>();
         OrderStatus orderStatus = OrderStatus.ON_HAND;
-        Session currentSession = null;
-        Transaction transaction = null;
         try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
             Date today = new Date();
             Date currentDate = new Date(today.getYear(), today.getMonth(), today.getDate());
             List<OrdersEntity> listByStatus = orderDao.getOrdersByStatusAndEndDate(orderStatus, currentDate);
@@ -98,28 +86,21 @@ public class OrderService implements IOrderService {
                 log.info("Get all books by couple ids (commit)");
                 log.info("Get all users by couple logins (commit)");
             }
-            transaction.commit();
             log.info("Get orders by status and endDate (commit)");
         } catch (DaoException e) {
-            transaction.rollback();
 //            ExceptionsHandler.processException(request, e);
             return Collections.emptyList();
-        } finally {
-            util.releaseSession(currentSession);
         }
         return result;
     }
 
     /*** sets Order status to CLOSED
-     * @param request - current http request
      * @param login   - the method checks if (User by login) closes his order, not of other Users
      * @param orderID - ID of the order to be closed */
-    public void closeOrder(HttpServletRequest request, String login, int orderID) {
-        Session currentSession = null;
-        Transaction transaction = null;
+    @Override
+    @Transactional(readOnly = false, rollbackFor = DaoException.class)
+    public void closeOrder(String login, int orderID) {
         try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
             OrdersEntity entity = orderDao.getById(orderID);
             log.info("Get order by id (commit)");
             // if User brought book to the Library, we mark Book as free
@@ -137,33 +118,27 @@ public class OrderService implements IOrderService {
                 orderDao.update(entity);
                 log.info("update order (commit)");
             }
-            transaction.commit();
         } catch (DaoException e) {
-            transaction.rollback();
 //            ExceptionsHandler.processException(request, e);
-        } finally {
-            util.releaseSession(currentSession);
         }
     }
 
     /*** sets Order status to ORDERED
-     * @param request  - current http request
+     * @param modelMap  - current http request map
      * @param login    - action for User by login exactly
      * @param bookID   - ID of the Book to be ordered
-     * @param isToHome - is order to home (true) or to reeding room (false) */
-    public void orderToHomeOrToRoom(HttpServletRequest request, String login, int bookID, Boolean isToHome) {
-        Session currentSession = null;
-        Transaction transaction = null;
+     * @param isToHome - is order to home (true) or to reading room (false) */
+    @Override
+    @Transactional(readOnly = false, rollbackFor = DaoException.class)
+    public void orderToHomeOrToRoom(ModelMap modelMap, String login, int bookID, Boolean isToHome) {
         try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
             UsersEntity userEntity = userDao.getByLogin(login);
             BooksEntity bookEntity = bookDao.getById(bookID);
             String[] statuses = {OrderStatus.ON_HAND.toString(), OrderStatus.ORDERED.toString()};
             OrdersEntity newEntity;
             // if User is in BlackList, he can't order any book
             if (userEntity == null || userEntity.getIsBlocked()) {
-                request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Вы не можете заказывать книги, находясь в 'Чёрном списке'.");
+                modelMap.addAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Вы не можете заказывать книги, находясь в 'Чёрном списке'.");
             } else {
                 // if asked Book is busy - find another exemplar
                 if (bookEntity != null && bookEntity.getIsBusy()) {
@@ -172,10 +147,10 @@ public class OrderService implements IOrderService {
                 }
                 // if all the exemplars are busy - tell User about it
                 if (bookEntity == null || bookEntity.getIsBusy()) {
-                    request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Все экземпляры данной книги выданы.");
+                    modelMap.addAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Все экземпляры данной книги выданы.");
                     // if the User already have this Book (or another exemplar) in his active orders (Ordered or OnHand) - tell him about it
                 } else if (!orderDao.getOrdersByLoginBookIdStatuses(login, bookEntity, statuses).isEmpty()) {
-                    request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Ваш заказ на эту книгу имеется и активен");
+                    modelMap.addAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Ваш заказ на эту книгу имеется и активен.");
                     /*** otherwise (if at least one exemplar is vacant,
                      * if the User is not blocked,
                      * if the User hasn't ordered this Book yet)
@@ -191,19 +166,16 @@ public class OrderService implements IOrderService {
                     Date endDate = new Date(startDate.getTime() + delay);
                     newEntity = createNewEntity(login, bookID, OrderStatus.ORDERED.toString(), place.toString(),
                             startDate, endDate);
-                    currentSession.save(newEntity);
+                    orderDao.save(newEntity);
                     log.info("save order (commit)");
+                    modelMap.addAttribute(Constants.INFO_MESSAGE_ATTRIBUTE, "Книга заказана успешно.");
                 }
             }
-            transaction.commit();
             log.info("Get user by Login (commit)");
             log.info("Get book by ID (commit)");
             log.info("Get orders by login, bookId and statuses (commit)");
         } catch (DaoException e) {
-            transaction.rollback();
 //            ExceptionsHandler.processException(request, e);
-        } finally {
-            util.releaseSession(currentSession);
         }
     }
 
@@ -225,15 +197,13 @@ public class OrderService implements IOrderService {
     }
 
     /*** sets new endDate of the Order, if the Order is not expired and current endDate not later then 'interval' days from today
-     * @param request - current http request
+     * @param modelMap - current http map
      * @param login   - action for User by login exactly
      * @param orderID - ID of the Order to be prolonged */
-    public void prolongOrder(HttpServletRequest request, String login, int orderID) {
-        Session currentSession = null;
-        Transaction transaction = null;
+    @Override
+    @Transactional(readOnly = false, rollbackFor = DaoException.class)
+    public void prolongOrder(ModelMap modelMap, String login, int orderID) {
         try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
             OrdersEntity entity = orderDao.getById(orderID);
             if (entity != null && entity.getLogin().equals(login) && OrderStatus.ON_HAND.toString().equals(entity.getStatus())) {
                 // time interval from now till the end date of the order. In case not to allow a user indefinitely prolong his order
@@ -249,34 +219,28 @@ public class OrderService implements IOrderService {
                     orderDao.update(entity);
                     log.info("update order (commit)");
                 } else {
-                    request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Заказ не должен быть просрочен, " +
+                    modelMap.addAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Заказ не должен быть просрочен, " +
                             "и время до его окончания не должно превышать " + interval + " дней");
                 }
             }
-            transaction.commit();
             log.info("Get order by id (commit)");
         } catch (DaoException e) {
-            transaction.rollback();
 //            ExceptionsHandler.processException(request, e);
-        } finally {
-            util.releaseSession(currentSession);
         }
     }
 
     /*** sets the Order status to ON_HAND, Book status to busy
-     * @param request - current http request
+     * @param modelMap - current http request map
      * @param orderID - ID of Order to be provided */
-    public void provideBook(HttpServletRequest request, int orderID) {
-        Session currentSession = null;
-        Transaction transaction = null;
+    @Override
+    @Transactional(readOnly = false, rollbackFor = DaoException.class)
+    public void provideBook(ModelMap modelMap, int orderID) {
         try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
             OrdersEntity entity = orderDao.getById(orderID);
             BooksEntity bookEntity = null;
             if (entity != null) bookEntity = bookDao.getById(entity.getBookId());
             if (bookEntity == null) {
-                request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Не удалось обратиться к книге");
+                modelMap.addAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Не удалось обратиться к книге");
             } else {
                 // if Book is busy, search another exemplar
                 if (bookEntity.getIsBusy()) {
@@ -286,7 +250,7 @@ public class OrderService implements IOrderService {
                         bookEntity = freeBook;
                         entity.setBookId(bookEntity.getBookId());
                     } else {
-                        request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Эта книга уже выдана!");
+                        modelMap.addAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Эта книга уже выдана!");
                     }
                 }
                 // if another exemplar was found
@@ -308,35 +272,25 @@ public class OrderService implements IOrderService {
                         bookDao.update(bookEntity);
                         log.info("Update book (commit)");
                     } else {
-                        request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Проверьте статус заказа!");
+                        modelMap.addAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Проверьте статус заказа!");
                     }
                 }
             }
-            transaction.commit();
             log.info("Get order by id (commit)");
         } catch (DaoException e) {
-            transaction.rollback();
 //            ExceptionsHandler.processException(request, e);
-        } finally {
-            util.releaseSession(currentSession);
         }
     }
 
-    public OrdersEntity getById(HttpServletRequest request, int orderID) {
+    @Override
+    @Transactional(readOnly = true, rollbackFor = DaoException.class)
+    public OrdersEntity getById(int orderID) {
         OrdersEntity answer = null;
-        Session currentSession = null;
-        Transaction transaction = null;
         try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
             answer = orderDao.getById(orderID);
-            transaction.commit();
             log.info("Get order by id (commit)");
         } catch (DaoException e) {
-            transaction.rollback();
 //            ExceptionsHandler.processException(request, e);
-        } finally {
-            util.releaseSession(currentSession);
         }
         return answer;
     }

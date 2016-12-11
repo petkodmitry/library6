@@ -25,7 +25,7 @@
                     <td>${seminar.getSubject()}</td>
                     <td>${seminar.getSeminarDate()}</td>
                     <td>
-                        <a href="controller?cmd=subscribeToSeminar&seminarId=${seminar.getSeminarId()}">Записаться на семинар</a>
+                        <a href="subscribeToSeminar?seminarId=${seminar.getSeminarId()}">Записаться на семинар</a>
                     </td>
                 </tr>
             </c:forEach>
@@ -33,8 +33,11 @@
     </form>
 </c:if>
 
-<BR><a href="controller?cmd=mySeminars">Мои семинары</a><BR>
-<BR><a href="controller?cmd=login">На главную</a>
+<BR><a href="mySeminars">Мои семинары</a><BR>
+<BR><a href="login">На главную</a>
+<c:if test="${requestScope['info'] != null}">
+    <BR><BR>${info}<BR>
+</c:if>
 <BR><BR><c:if test="${requestScope['errorMessage'] != null}">
     Ошибка: ${errorMessage}
 </c:if>

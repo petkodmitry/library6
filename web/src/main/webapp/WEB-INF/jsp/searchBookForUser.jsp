@@ -12,7 +12,7 @@
 <body><H3>Поиск книги для заказа</H3>
 <HR>
 <BR>Введите часть названия книги или имени автора
-<form method="post" action="controller">
+<form method="post" action="">
     <INPUT type="hidden" name="cmd" value="searchbook">
     <table>
         <tr>
@@ -46,12 +46,12 @@
                     </td>
                     <td>
                         <c:if test="${book.getIsBusy() == false}">
-                            <a href="controller?cmd=orderToHome&bookId=${book.getBookId()}">Заказать</a>
+                            <a href="orderToHome?bookId=${book.getBookId()}">Заказать</a>
                         </c:if>
                     </td>
                     <td>
                         <c:if test="${book.getIsBusy() == false}">
-                            <a href="controller?cmd=orderToReadingRoom&bookId=${book.getBookId()}">Заказать</a>
+                            <a href="orderToReadingRoom?bookId=${book.getBookId()}">Заказать</a>
                         </c:if>
                     </td>
                 </tr>
@@ -60,8 +60,11 @@
     </form>
 </c:if>
 
-<BR><a href="controller?cmd=myorders">Мои заказы в очереди</a>
-<BR><a href="controller?cmd=login">На главную</a>
+<BR><a href="myOrders">Мои заказы в очереди</a>
+<BR><a href="login">На главную</a>
+<c:if test="${requestScope['info'] != null}">
+    <BR><BR>${info}<BR>
+</c:if>
 <BR><BR><c:if test="${requestScope['errorMessage'] != null}">
     Ошибка: ${errorMessage}
 </c:if>

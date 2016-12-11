@@ -5,6 +5,7 @@ import com.petko.entities.BooksEntity;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -15,7 +16,7 @@ import java.util.Set;
 @Repository
 public class BookDao extends BaseDao<BooksEntity> implements IBookDao {
     private static Logger log = Logger.getLogger(BookDao.class);
-//    private SessionFactory sessionFactory;
+    private Session session;
 
     /**
      *
@@ -23,10 +24,11 @@ public class BookDao extends BaseDao<BooksEntity> implements IBookDao {
      * @return List of BooksEntity considering given options
      * @throws DaoException
      */
+    @Override
     public List<BooksEntity> getAllByCoupleIds(Set<Integer> ids) throws DaoException {
         List<BooksEntity> result;
         try {
-            session = sessionFactory.getCurrentSession();
+            session = getCurrentSession();
             String hql = "SELECT B FROM BooksEntity B WHERE B.bookId IN :idsParam";
             Query query = session.createQuery(hql);
             query.setParameterList("idsParam", ids);
@@ -48,11 +50,13 @@ public class BookDao extends BaseDao<BooksEntity> implements IBookDao {
      * @return List of BooksEntity considering given options
      * @throws DaoException
      */
+    @Override
     public List<BooksEntity> getBooksByTitleOrAuthorAndStatus(String searchTextInBook, Boolean status) throws DaoException {
         searchTextInBook = "%" + searchTextInBook + "%";
         List<BooksEntity> result;
         try {
-            session = util.getSession();
+//            session = util.getSession();
+            session = getCurrentSession();
 
             Query query;
             if (status != null) {
@@ -85,10 +89,12 @@ public class BookDao extends BaseDao<BooksEntity> implements IBookDao {
      * @return List of Book by required Title&Author&Status
      * @throws DaoException
      */
+    @Override
     public List<BooksEntity> getBooksByTitleAndAuthorAndStatus(String title, String author, Boolean isBusy) throws DaoException {
         List<BooksEntity> result;
         try {
-            session = util.getSession();
+//            session = util.getSession();
+            session = getCurrentSession();
 
             Query query;
             if (isBusy != null) {

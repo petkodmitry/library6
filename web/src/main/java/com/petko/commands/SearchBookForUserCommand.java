@@ -37,7 +37,7 @@ public class SearchBookForUserCommand extends AbstractCommand{
          */
         String searchTextInBook;
         if ((searchTextInBook = request.getParameter("searchTextInBook")) != null && !"".equals(searchTextInBook)) {
-            searchBookForUser = bookService.searchBooksByTitleOrAuthor(request, searchTextInBook, login);
+            searchBookForUser = bookService.searchBooksByTitleOrAuthor(searchTextInBook, login);
             session.setAttribute("searchBookForUser", searchBookForUser);
         }
         setForwardPage(request, page);

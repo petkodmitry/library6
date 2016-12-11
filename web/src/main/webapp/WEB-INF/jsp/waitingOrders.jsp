@@ -34,10 +34,10 @@
                 <td>${order.getPlace().toString()}</td>
                 <td>${order.getStartDate()}</td>
                 <td>
-                    <a href="controller?cmd=provideBook&orderId=${order.getOrderId()}">Выдать</a>
+                    <a href="provideBook?orderId=${order.getOrderId()}">Выдать</a>
                 </td>
                 <td>
-                    <a href="controller?cmd=closeOrder&orderId=${order.getOrderId()}">Закрыть</a>
+                    <a href="closeOrder?orderId=${order.getOrderId()}">Закрыть</a>
                 </td>
             </tr>
         </c:forEach>
@@ -45,7 +45,7 @@
 </form>
 </c:if>
 
-<BR><a href="controller?cmd=login">На главную</a>
+<BR><a href="login">На главную</a>
 <BR><BR><c:if test="${requestScope['errorMessage'] != null}">
     Ошибка: ${errorMessage}
 </c:if>

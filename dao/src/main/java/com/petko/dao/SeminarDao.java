@@ -5,6 +5,7 @@ import com.petko.entities.SeminarsEntity;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,7 @@ import java.util.List;
 @Repository
 public class SeminarDao extends BaseDao<SeminarsEntity> implements ISeminarDao {
     private static Logger log = Logger.getLogger(SeminarDao.class);
+    private Session session;
 
     /**
      * all seminars of a User
@@ -25,7 +27,7 @@ public class SeminarDao extends BaseDao<SeminarsEntity> implements ISeminarDao {
     public List<SeminarsEntity> getSeminarsByLogin(String login) throws DaoException {
         List<SeminarsEntity> result;
         try {
-            session = util.getSession();
+            session = getCurrentSession();
             String hql = "SELECT S FROM SeminarsEntity S JOIN S.users U WHERE U.login=:param AND S.seminarDate>=:param2";
             Query query = session.createQuery(hql);
 //            query.setCacheable(true);
@@ -49,7 +51,7 @@ public class SeminarDao extends BaseDao<SeminarsEntity> implements ISeminarDao {
     public List<SeminarsEntity> getAll() throws DaoException {
         List<SeminarsEntity> result;
         try {
-            session = util.getSession();
+            session = getCurrentSession();
             String hql = "FROM SeminarsEntity S WHERE S.seminarDate>=:param ORDER BY S.seminarDate ASC";
             Query query = session.createQuery(hql);
             query.setParameter("param", new Date());

@@ -14,18 +14,8 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 
 public class OpenedOrdersCommand extends AbstractCommand{
-    private static OpenedOrdersCommand instance;
     @Autowired
     private ResourceManager resourceManager;
-
-    private OpenedOrdersCommand() {}
-
-    public static synchronized OpenedOrdersCommand getInstance() {
-        if (instance == null) {
-            instance = new OpenedOrdersCommand();
-        }
-        return instance;
-    }
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
@@ -33,7 +23,7 @@ public class OpenedOrdersCommand extends AbstractCommand{
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(/*request,*/ login)) {
             String page = resourceManager.getProperty(Constants.PAGE_OPENED_ORDERS);
-            List<FullOrdersList> openedOrdersList = orderService.getOrdersByLoginAndStatus(request, null, OrderStatus.ON_HAND);
+            List<FullOrdersList> openedOrdersList = orderService.getOrdersByLoginAndStatus(null, OrderStatus.ON_HAND);
             session.setAttribute("openedOrdersList", openedOrdersList);
             setForwardPage(request, page);
         // если не админ, сообщаем о невозможности выполнения команды

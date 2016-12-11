@@ -6,6 +6,6 @@
 <body>
 <H3>Ошибка!</H3><hr><br>
 ${errorMessage}<br><br>
-<a href="controller?cmd=login">На главную</a>
+<a href="login">На главную</a>
 </body>
 </html>

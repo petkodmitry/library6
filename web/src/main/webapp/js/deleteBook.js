@@ -1,11 +1,11 @@
 function deleteBook(id) {
-    //location.href= "/controller?cmd=searchBookAdmin";
+    //location.href= "/searchBookAdmin";
     $.ajax({
-        url: 'controller?cmd=deleteBook&bookId=' + id,
+        url: 'deleteBook&bookId=' + id,
         context: document.body
     }).done(function() {
         //$("#refresh").load(location.href + " #refresh>*", "");
-        //location.resolveURL("/controller?cmd=searchBookAdmin");
+        //location.resolveURL("/searchBookAdmin");
         //location.reload($("#refresh"));
         location.reload();
     });

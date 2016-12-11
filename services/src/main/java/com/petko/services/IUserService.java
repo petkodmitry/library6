@@ -1,34 +1,35 @@
 package com.petko.services;
 
-import com.petko.DaoException;
 import com.petko.entities.UsersEntity;
+import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 public interface IUserService {
-    boolean isLoginSuccess(/*HttpServletRequest request, */String login, String password);
+    boolean isLoginSuccess(String login, String password);
 
-    boolean isAdminUser(/*HttpServletRequest request, */String login);
+    boolean isAdminUser(String login);
 
-    List<UsersEntity> getAll(HttpServletRequest request);
+    List<UsersEntity> getAll(ModelMap modelMap, HttpSession session);
 
-    List<UsersEntity> getUsersByBlock(HttpServletRequest request, boolean isBlocked);
+    List<UsersEntity> getUsersByBlock(boolean isBlocked);
 
-    void setBlockUser(HttpServletRequest request, String login, boolean isBlocked);
+    void setBlockUser(String login, boolean isBlocked);
 
-    void logOut(HttpServletRequest request, String login);
+    void logOut(HttpSession session, String login);
 
     UsersEntity setAllDataOfEntity(UsersEntity result, String firstName, String lastName, String login, String password,
                                    boolean isAdmin, boolean isBlocked);
 
-    boolean isLoginExists(HttpServletRequest request, String login);
+    boolean isLoginExists(String login);
 
     boolean isAllRegisterDataEntered (UsersEntity regData, String repeatPassword);
 
     boolean isAllPasswordRulesFollowed(String password, String repeatPassword);
 
-    void add(HttpServletRequest request, UsersEntity entity);
+    void add(UsersEntity entity);
 
     UsersEntity deleteUser(HttpServletRequest request, Integer userId);
 }

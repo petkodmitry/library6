@@ -51,16 +51,16 @@ public class BookServiceTest {
 
     @Test(expected = NullPointerException.class)
     public void testAdd1() {
-        bookService.add(null, null);
+        bookService.add(null);
     }
 
     @Test
     public void testSearchBooksByTitleOrAuthor1() {
-        List<BooksEntity> list = bookService.searchBooksByTitleOrAuthor(null, null, null);
+        List<BooksEntity> list = bookService.searchBooksByTitleOrAuthor(null, null);
         Assert.assertTrue(list.isEmpty());
-        list = bookService.searchBooksByTitleOrAuthor(request, null, "noUserExist");
+        list = bookService.searchBooksByTitleOrAuthor( null, "noUserExist");
         Assert.assertTrue(list.isEmpty());
-        list = bookService.searchBooksByTitleOrAuthor(request, "noBook", "noUserExist");
+        list = bookService.searchBooksByTitleOrAuthor("noBook", "noUserExist");
         Assert.assertTrue(list.isEmpty());
     }
 
@@ -75,18 +75,18 @@ public class BookServiceTest {
                 break;
             }
         }
-        List<BooksEntity> list = bookService.searchBooksByTitleOrAuthor(request, "a", user.getLogin());
+        List<BooksEntity> list = bookService.searchBooksByTitleOrAuthor("a", user.getLogin());
         Assert.assertNotNull(list);
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeleteBook1() {
-        bookService.deleteBook(null, null);
+        bookService.deleteBook(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeleteBook2() {
-        bookService.deleteBook(request, null);
+        bookService.deleteBook(null);
     }
 
     @Test
@@ -95,8 +95,8 @@ public class BookServiceTest {
         newBook.setAuthor("test");
         newBook.setTitle("test");
         newBook.setIsBusy(false);
-        bookService.add(request, newBook);
+        bookService.add(newBook);
         int id = getTheLastBookId();
-        bookService.deleteBook(request, id);
+        bookService.deleteBook(id);
     }
 }

@@ -17,11 +17,11 @@ public class RequestHandler {
 
     public static void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String cmd = request.getParameter("cmd");
-        Command command = UnknownCommand.getInstance();
+//        Command command = UnknownCommand.getInstance();
+//
+//        if (cmd != null) command = CommandType.getCommand(cmd);
 
-        if (cmd != null) command = CommandType.getCommand(cmd);
-
-        command.execute(request, response);
+//        command.execute(request, response);
         RequestDispatcher dispatcher = request.getServletContext().
                 getRequestDispatcher((String) request.getAttribute(Constants.FORWARD_PAGE_ATTRIBUTE));
         dispatcher.forward(request, response);

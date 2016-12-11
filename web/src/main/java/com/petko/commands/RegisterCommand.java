@@ -11,19 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 public class RegisterCommand extends AbstractCommand {
-    private static RegisterCommand instance;
     @Autowired
     private ResourceManager resourceManager;
-
-    private RegisterCommand() {
-    }
-
-    public static synchronized RegisterCommand getInstance() {
-        if (instance == null) {
-            instance = new RegisterCommand();
-        }
-        return instance;
-    }
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
@@ -55,7 +44,7 @@ public class RegisterCommand extends AbstractCommand {
                     /**
                      * check if asked login exists in database
                      */
-                    if (userService.isLoginExists(request, regData.getLogin())) {
+                    if (userService.isLoginExists(regData.getLogin())) {
                         request.setAttribute("unavailableMessage", "логин НЕдоступен!");
                     } else {
                         request.setAttribute("unavailableMessage", "логин доступен");
@@ -64,7 +53,7 @@ public class RegisterCommand extends AbstractCommand {
                          */
                         if (userService.isAllRegisterDataEntered(regData, repeatPassword)) {
                             if (userService.isAllPasswordRulesFollowed(regData.getPassword(), repeatPassword)) {
-                                userService.add(request, regData);
+                                userService.add(regData);
                                 session.removeAttribute("regData");
                                 page = resourceManager.getProperty(Constants.PAGE_REGISTRATION_OK);
                             } else {

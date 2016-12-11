@@ -34,7 +34,7 @@
                     <td>${order.getEndDate()}</td>
                     <td>
                         <c:if test="${order.getPlace().toString().equals('Абонемент')}">
-                            <a href="controller?cmd=prolongOrder&orderId=${order.getOrderId()}">Продлить</a>
+                            <a href="prolongOrder?orderId=${order.getOrderId()}">Продлить</a>
                         </c:if>
                     </td>
                 </tr>
@@ -43,7 +43,7 @@
     </form>
 </c:if>
 
-<BR><a href="controller?cmd=login">На главную</a>
+<BR><a href="login">На главную</a>
 <BR><BR><c:if test="${requestScope['errorMessage'] != null}">
     Ошибка: ${errorMessage}
 </c:if>

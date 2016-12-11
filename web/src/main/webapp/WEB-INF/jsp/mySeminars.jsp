@@ -12,7 +12,7 @@
 <body><H3>Семинары, в которых я участвую</H3>
 <HR>
 
-<BR><a href="controller?cmd=chooseSeminars">Выбрать семинары</a>
+<BR><a href="chooseSeminars">Выбрать семинары</a>
 <BR><BR>
 
 <c:if test="${mySeminars != null && !mySeminars.isEmpty()}">
@@ -28,7 +28,7 @@
                     <td>${seminar.getSubject()}</td>
                     <td>${seminar.getSeminarDate()}</td>
                     <td>
-                        <a href="controller?cmd=unSubscribeSeminar&seminarId=${seminar.getSeminarId()}">Отписаться</a>
+                        <a href="unSubscribeSeminar?seminarId=${seminar.getSeminarId()}">Отписаться</a>
                     </td>
                 </tr>
             </c:forEach>
@@ -36,7 +36,10 @@
     </form>
 </c:if>
 
-<BR><a href="controller?cmd=login">На главную</a>
+<BR><a href="login">На главную</a>
+<c:if test="${requestScope['info'] != null}">
+    <BR><BR>${info}<BR>
+</c:if>
 <BR><BR><c:if test="${requestScope['errorMessage'] != null}">
     Ошибка: ${errorMessage}
 </c:if>

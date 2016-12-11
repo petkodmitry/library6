@@ -12,7 +12,7 @@
 <HR>
 <FORM name="addSeminarForm"
       method="POST"
-      action="controller">
+      action="">
     <table border="0">
         <tr>
             <td align="right">Тема семинара:</td>
@@ -31,13 +31,13 @@
         <tr style="height: 25px">
             <td>
             </td>
-            <td align="right"><INPUT type="submit" formaction="controller?cmd=addSeminar" title="Добавить новый семинар" value="Добавить"></td>
+            <td align="right"><INPUT type="submit" formaction="addSeminar" title="Добавить новый семинар" value="Добавить"></td>
         </tr>
     </table>
     <br>
 </FORM>
-<BR><a href="controller?cmd=adminSeminars">Список семинаров</a><BR>
-<BR><a href="controller?cmd=login">На главную</a><BR>
+<BR><a href="adminSeminars">Список семинаров</a><BR>
+<BR><a href="login">На главную</a><BR>
 <HR>
 <c:if test="${requestScope['info'] != null}">
     ${info}<BR>

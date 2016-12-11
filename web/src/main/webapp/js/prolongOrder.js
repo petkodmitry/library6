@@ -1,6 +1,6 @@
 function prolongOrder(id) {
     $.ajax({
-        url: 'controller?cmd=prolongOrder&orderId=' + id,
+        url: 'prolongOrder&orderId=' + id,
         context: document.body
     }).done(function() {
         location.reload();

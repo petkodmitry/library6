@@ -1,24 +1,25 @@
 package com.petko.services;
 
 import com.petko.entities.SeminarsEntity;
+import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface ISeminarService {
-    void add(HttpServletRequest request, SeminarsEntity entity);
+    void add(SeminarsEntity entity);
 
-    List<SeminarsEntity> getAll(HttpServletRequest request);
+    List<SeminarsEntity> getAll();
 
-    List<SeminarsEntity> availableSeminarsForLogin(HttpServletRequest request, String login);
+    List<SeminarsEntity> availableSeminarsForLogin(String login);
 
-    void delete(HttpServletRequest request, int id);
+    void delete(ModelMap modelMap, int id);
 
-    List<SeminarsEntity> getSeminarsByLogin(HttpServletRequest request, String login);
+    List<SeminarsEntity> getSeminarsByLogin(String login);
 
-    void subscribeToSeminar(HttpServletRequest request, String login, int seminarId);
+    void subscribeToSeminar(ModelMap modelMap, String login, int seminarId);
 
-    void unSubscribeSeminar(HttpServletRequest request, String login, int seminarId);
+    void unSubscribeSeminar(ModelMap modelMap, String login, int seminarId);
 
-    SeminarsEntity getById(HttpServletRequest request, int id);
+    SeminarsEntity getById(int id);
 }

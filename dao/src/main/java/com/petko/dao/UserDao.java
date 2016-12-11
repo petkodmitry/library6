@@ -5,6 +5,7 @@ import com.petko.entities.UsersEntity;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,7 @@ import java.util.Set;
 @Repository
 public class UserDao extends BaseDao<UsersEntity> implements IUserDao {
     private static Logger log = Logger.getLogger(UserDao.class);
+    private Session session;
 
     /**
      * gets User by his Login
@@ -44,7 +46,7 @@ public class UserDao extends BaseDao<UsersEntity> implements IUserDao {
     public UsersEntity getByLogin(String login) throws DaoException {
         UsersEntity result;
         try {
-            session = sessionFactory.getCurrentSession();
+            session = getCurrentSession();
             String hql = "select U from UsersEntity U where U.login=:param";
             Query query = session.createQuery(hql);
 //            query.setCacheable(true);
@@ -68,7 +70,7 @@ public class UserDao extends BaseDao<UsersEntity> implements IUserDao {
     public List<UsersEntity> getAllByCoupleLogins(Set<String> logins) throws DaoException {
         List<UsersEntity> result;
         try {
-            session = util.getSession();
+            session = getCurrentSession();
             String hql = "SELECT U FROM UsersEntity U WHERE U.login IN :loginsParam";
             Query query = session.createQuery(hql);
             query.setParameterList("loginsParam", logins);
@@ -92,7 +94,7 @@ public class UserDao extends BaseDao<UsersEntity> implements IUserDao {
     public List<UsersEntity> getAllByBlockStatus(Boolean isBlocked) throws DaoException {
         List<UsersEntity> result;
         try {
-            session = util.getSession();
+            session = getCurrentSession();
             String hql = "SELECT U FROM UsersEntity U WHERE U.isBlocked=:blockParam";
             Query query = session.createQuery(hql);
             query.setParameter("blockParam", isBlocked);

@@ -15,18 +15,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class AddSeminarCommand extends AbstractCommand {
-    private static AddSeminarCommand instance;
     @Autowired
     private ResourceManager resourceManager;
-
-    private AddSeminarCommand() {}
-
-    public static synchronized AddSeminarCommand getInstance() {
-        if (instance == null) {
-            instance = new AddSeminarCommand();
-        }
-        return instance;
-    }
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
@@ -52,7 +42,7 @@ public class AddSeminarCommand extends AbstractCommand {
                 if (!"".equals(subject) && date != null && (today.before(date) || today.equals(date))) {
                     regData.setSubject(subject);
                     regData.setSeminarDate(date);
-                    seminarService.add(request, regData);
+                    seminarService.add(regData);
                     request.setAttribute("info", "Семинар добавлен в базу");
                     session.removeAttribute("regData");
                 } else {

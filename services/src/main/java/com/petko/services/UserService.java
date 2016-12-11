@@ -8,12 +8,12 @@ import com.petko.entities.UsersEntity;
 import com.petko.utils.HibernateUtilLibrary;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -24,15 +24,10 @@ public class UserService implements IUserService {
     private static Logger log = Logger.getLogger(UserService.class);
     @Autowired
     private IUserDao userDao;
-    @Autowired
-    private Dao baseDao;
-    @Autowired
-    private HibernateTransactionManager transactionManager;
-    @Autowired
-    private HibernateUtilLibrary util/* = HibernateUtilLibrary.getHibernateUtil()*/;
 
     /**
      * Adds into active users List
+     *
      * @param login to be added
      */
     private void addToActiveUsers(String login) {
@@ -41,6 +36,7 @@ public class UserService implements IUserService {
 
     /**
      * Removes from active users List
+     *
      * @param login to be removed
      */
     private void removeFromActiveUsers(String login) {
@@ -49,31 +45,28 @@ public class UserService implements IUserService {
 
     /**
      * closes request session and removes user from active users list
-     * @param request - current http request
-     * @param login - user to be logOut
+     *
+     * @param session - current http session
+     * @param login   - user to be logOut
      */
-    public void logOut(HttpServletRequest request, String login) {
+    public void logOut(HttpSession session, String login) {
         if (login != null) removeFromActiveUsers(login);
-        request.getSession().invalidate();
+        session.invalidate();
     }
 
     /**
      * Checks if user is already logged in
-//     * @param request - current http request
-     * @param login to be checked
+     * //     * @param request - current http request
+     *
+     * @param login    to be checked
      * @param password to be checked
-     * @return succes or not
+     * @return success or not
      */
+    @Override
     @Transactional(readOnly = true, rollbackFor = DaoException.class)
-    public boolean isLoginSuccess(/*HttpServletRequest request, */String login, String password) {
+    public boolean isLoginSuccess(String login, String password) {
         if (login == null || password == null) return false;
         try {
-
-            //////////////////////////////////////////////////
-            SessionFactory sessionFactory = transactionManager.getSessionFactory();
-            Session session = sessionFactory.getCurrentSession();
-            //////////////////////////////////////////////////
-
             UsersEntity user = userDao.getByLogin(login);
             log.info("Get user by login (commit)");
             if (user != null && password.equals(user.getPassword())) {
@@ -82,111 +75,49 @@ public class UserService implements IUserService {
             } else {
                 return false;
             }
-        } catch (DaoException e) { return false; }
+        } catch (DaoException e) {
+            return false;
+        }
     }
-
-    /**
-    @Transactional(readOnly = true, rollbackFor = DaoException.class)
-    public boolean isLoginSuccess(*//*HttpServletRequest request, *//*String login, String password) {
-        if (login == null || password == null) return false;
-        return transactionTemplate.execute(new TransactionCallback<Boolean>() {
-            @Override
-            public Boolean doInTransaction(TransactionStatus transactionStatus) {
-                try {
-                    UsersEntity user = userDao.getByLogin(login);
-                    log.info("Get user by login (commit)");
-                    if (user != null && password.equals(user.getPassword())) {
-                        addToActiveUsers(login);
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } catch (DaoException e) {
-                    transactionStatus.setRollbackOnly();
-//                    ExceptionsHandler.processException(request, e);
-                    return false;
-                }
-            }
-        });
-    }*/
 
     /**
      * Checks if the User is Admin or not
-     * @param request - current http request
      * @param login to be checked
      * @return admin or not (true or false)
      */
-    /**public boolean isAdminUser(HttpServletRequest request, String login) {
-        boolean result = false;
-        Session currentSession = null;
-        Transaction transaction = null;
-        try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
-
-            UsersEntity user = userDao.getByLogin(login);
-            if (user != null) result = user.getIsAdmin();
-        } catch (DaoException e) {
-            transaction.rollback();
-            ExceptionsHandler.processException(request, e);
-            return false;
-        }  finally {
-            util.releaseSession(currentSession);
-        }
-        return result;
-    }*/
+    @Override
     @Transactional(readOnly = true, rollbackFor = DaoException.class)
-    public boolean isAdminUser(/*HttpServletRequest request, */String login) {
-//        return transactionTemplate.execute(transactionStatus -> {
-            try {
-                UsersEntity user = userDao.getByLogin(login);
-                if (user != null) return user.getIsAdmin();
-                else return false;
-            } catch (DaoException e) {
-//                transactionStatus.setRollbackOnly();
-//                ExceptionsHandler.processException(request, e);
-                return false;
-            }
-//        });
+    public boolean isAdminUser(String login) {
+        try {
+            UsersEntity user = userDao.getByLogin(login);
+            if (user != null) return user.getIsAdmin();
+            else return false;
+        } catch (DaoException e) {
+            return false;
+        }
     }
 
     /**
-     * gives List of all Users
-     * @param request - current http request
+     * gives List of all Users. According to filters, sorts and current page
+     *
+     * @param modelMap - Map of current http model
+     * @param session - current httpSession
      * @return List of all Users
      */
-    public List<UsersEntity> getAll(HttpServletRequest request) {
-        List<UsersEntity> result = new ArrayList<>();
-        Session currentSession = null;
-        Transaction transaction = null;
-        HttpSession httpSession = request.getSession();
-        String page = request.getParameter("page");
+    @Override
+    @Transactional(readOnly = true, rollbackFor = DaoException.class)
+    public List<UsersEntity> getAll(ModelMap modelMap, HttpSession session) {
+        List<UsersEntity> result;
+        String page = (String) modelMap.get("page");
 
-        // for sorting
-        String sortBy = request.getParameter("sortBy");
-        if (sortBy == null) sortBy = (String) httpSession.getAttribute("sortBy");
-        String orderType = request.getParameter("orderType");
-        if (orderType == null) orderType = (String) httpSession.getAttribute("orderType");
+        // for sorting and filtering
+        String  sortBy = (String) session.getAttribute("sortBy");
+        String  orderType = (String) session.getAttribute("orderType");
+        Map<String, String> filters = (Map<String, String>) session.getAttribute("filters");
 
-        // for filtering
-        Map<String, String> filters = (Map<String, String>) httpSession.getAttribute("filters");
-        if (filters == null) filters = new HashMap<>();
-        Map<String, String[]> parMap = request.getParameterMap();
-        for (String parameter : parMap.keySet()) {
-            if (parameter.endsWith("Filter")) {
-                String paramToPut = parameter.substring(0, parameter.indexOf("Filter"));
-                String paramValue = parMap.get(parameter)[0];
-                if (!"".equals(paramValue)) filters.put(paramToPut, paramValue);
-            }
-        }
-        String filterRemove = request.getParameter("filterRemove");
-        if (filterRemove != null) filters.remove(filterRemove);
-        httpSession.setAttribute("filters", filters);
-
-        // go ahead
-        String perPageString = request.getParameter("perPage");
+        String perPageString = (String) modelMap.get("perPage");
         Integer newPerPage = perPageString != null ? Integer.parseInt(perPageString) : null;
-        Integer oldPerPage = (Integer) httpSession.getAttribute("max");
+        Integer oldPerPage = (Integer) session.getAttribute("max");
         Integer newMax;
         if (newPerPage != null) {
             newMax = newPerPage;
@@ -194,47 +125,45 @@ public class UserService implements IUserService {
         else newMax = oldPerPage != null ? oldPerPage : 5;
 
         try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
             int firstInt;
             if (page == null) {
                 Long total = userDao.getTotal();
                 log.info("getTotal users (commit)");
-                httpSession.setAttribute("total", total);
+                session.setAttribute("total", total);
                 firstInt = 0;
             } else {
                 Integer pageInt = Integer.parseInt(page);
-                Integer newPageInt = getPageDueToNewPerPage(request, httpSession, pageInt, newPerPage, oldPerPage);
+                Integer newPageInt = getPageDueToNewPerPage(modelMap, session, pageInt, newPerPage, oldPerPage);
                 if (sortBy != null && orderType != null) {
-                    httpSession.setAttribute("sortBy", sortBy);
-                    httpSession.setAttribute("orderType", orderType);
+                    session.setAttribute("sortBy", sortBy);
+                    session.setAttribute("orderType", orderType);
                 }
                 firstInt = (newPageInt - 1) * newMax;
             }
-            httpSession.setAttribute("totalToShow", userDao.getAll(0,  ((Long) httpSession.getAttribute("total")).intValue(), sortBy, orderType, filters).size());
+            Long totalLong = (Long) session.getAttribute("total");
+            int total = totalLong.intValue();
+            session.setAttribute("totalToShow", userDao.getAll(0, total, sortBy, orderType, filters).size());
             result = userDao.getAll(firstInt, newMax, sortBy, orderType, filters);
-            httpSession.setAttribute("max", newMax);
-            transaction.commit();
+            session.setAttribute("max", newMax);
             log.info("getAll users (commit)");
         } catch (DaoException e) {
-            transaction.rollback();
+            return Collections.emptyList();
 //            ExceptionsHandler.processException(request, e);
-        }  finally {
-            util.releaseSession(currentSession);
         }
         return result;
     }
 
     /**
      * Re-estimates current page due to perPage parameter changes
-     * @param request - current httpRequest
-     * @param session - current httpSession
-     * @param page - current page (not re-estimated)
+     *
+     * @param modelMap    - current httpRequest map
+     * @param session    - current session
+     * @param page       - current page (not re-estimated)
      * @param newPerPage - a new perPage parameter
-     * @param oldPerPage - perPage parameter which is saved in httpSession
+     * @param oldPerPage - perPage parameter which is saved in session
      * @return the correct page due to perPage changes
      */
-    private Integer getPageDueToNewPerPage(HttpServletRequest request, HttpSession session, Integer page,
+    private Integer getPageDueToNewPerPage(ModelMap modelMap, HttpSession session, Integer page,
                                            Integer newPerPage, Integer oldPerPage) {
         Integer result;
         Integer totalToShow = (Integer) session.getAttribute("totalToShow");
@@ -245,16 +174,16 @@ public class UserService implements IUserService {
         } else {
             result = changeAndGiveCurrentPage(page, totalToShow, newPerPage, oldPerPage, false);
         }
-        request.setAttribute("page", result);
+        modelMap.addAttribute("page", result);
         return result;
     }
 
     /**
      * Re-estimates current page due to perPage parameter changes
-     * @param page - current page (not re-estimated)
-     * @param totalToShow - the whole amount of records (including filters)
-     * @param newPerPage - a new perPage parameter
-     * @param oldPerPage - perPage parameter which is saved in httpSession
+     * @param page          - current page (not re-estimated)
+     * @param totalToShow   - the whole amount of records (including filters)
+     * @param newPerPage    - a new perPage parameter
+     * @param oldPerPage    - perPage parameter which is saved in session
      * @param isMoreRecords - is new perPage bigger than current
      * @return the correct page due to perPage changes
      */
@@ -266,7 +195,7 @@ public class UserService implements IUserService {
         if (isMoreRecords) {
             result = rest != 0 ? temp + 1 : temp;
         } else result = rest != 0 ? temp - 1 : temp;
-        rest =  totalToShow % newPerPage;
+        rest = totalToShow % newPerPage;
         Integer endPage = rest != 0 ? (totalToShow - rest) / newPerPage + 1 : totalToShow / newPerPage;
         if (endPage < result) result = endPage;
         return result;
@@ -274,37 +203,30 @@ public class UserService implements IUserService {
 
     /**
      * Checks if login exists in DataBase
-     * @param request - current http request
-     * @param login to be checked
+     *
+     * @param login   to be checked
      * @return exist or not (true or false)
      */
-    public boolean isLoginExists(HttpServletRequest request, String login) {
+    @Override
+    @Transactional(readOnly = true, rollbackFor = DaoException.class)
+    public boolean isLoginExists(String login) {
         boolean result = false;
-        Session currentSession = null;
-        Transaction transaction = null;
         try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
-
             UsersEntity userEntity = userDao.getByLogin(login);
             String entityLogin = null;
             if (userEntity != null) entityLogin = userEntity.getLogin();
             if (login != null && login.equals(entityLogin)) result = true;
-
-            transaction.commit();
             log.info("Get user by login (commit)");
         } catch (DaoException e) {
-            transaction.rollback();
 //            ExceptionsHandler.processException(request, e);
-        }  finally {
-            util.releaseSession(currentSession);
         }
         return result;
     }
 
     /**
      * check for equality and the length
-     * @param password to be checked
+     *
+     * @param password       to be checked
      * @param repeatPassword to check for equality with password
      * @return true or false
      */
@@ -314,92 +236,70 @@ public class UserService implements IUserService {
 
     /**
      * Adds User to DataBase
-     * @param request - current http request
-     * @param entity to be added
+     *
+     * @param entity  to be added
      */
-    public void add(HttpServletRequest request, UsersEntity entity) {
-        Session currentSession = null;
-        Transaction transaction = null;
+    @Override
+    @Transactional(readOnly = false, rollbackFor = DaoException.class)
+    public void add(UsersEntity entity) {
         try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
-
             userDao.save(entity);
-
-            transaction.commit();
             log.info("Save user to DB (commit)");
         } catch (DaoException e) {
-            transaction.rollback();
 //            ExceptionsHandler.processException(request, e);
-        } finally {
-            util.releaseSession(currentSession);
         }
     }
 
     /**
      * Changes the status of the User
-     * @param request - current http request
-     * @param login to be updeted
+     *
+     * @param login     to be updeted
      * @param isBlocked - status to be setted
      */
-    public void setBlockUser(HttpServletRequest request, String login, boolean isBlocked) {
-        Session currentSession = null;
-        Transaction transaction = null;
+    @Override
+    @Transactional(readOnly = false, rollbackFor = DaoException.class)
+    public void setBlockUser(String login, boolean isBlocked) {
         try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
-
             UsersEntity entity = userDao.getByLogin(login);
             if (entity != null) {
                 entity.setIsBlocked(isBlocked);
                 userDao.update(entity);
             }
-
-            transaction.commit();
             log.info("Get user by login (commit)");
             log.info("Update user (commit)");
         } catch (DaoException e) {
-            transaction.rollback();
 //            ExceptionsHandler.processException(request, e);
-        }  finally {
-            util.releaseSession(currentSession);
         }
     }
 
     /**
      * Gets Users by their status
-     * @param request - current http request
+     *
      * @param isBlocked - status to be searched
      * @return Users by their status
      */
-    public List<UsersEntity> getUsersByBlock(HttpServletRequest request, boolean isBlocked) {
-        Session currentSession = null;
-        Transaction transaction = null;
-        List<UsersEntity> allByBlock = new ArrayList<>();
+    @Override
+    @Transactional(readOnly = false, rollbackFor = DaoException.class)
+    public List<UsersEntity> getUsersByBlock(boolean isBlocked) {
+        List<UsersEntity> allByBlock;
         try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
-
             allByBlock = userDao.getAllByBlockStatus(isBlocked);
-            transaction.commit();
             log.info("Get all users by block status (commit)");
+            return allByBlock;
         } catch (DaoException e) {
-            transaction.rollback();
 //            ExceptionsHandler.processException(request, e);
             return Collections.emptyList();
-        }  finally {
-            util.releaseSession(currentSession);
         }
-        return allByBlock;
     }
 
     /**
      * Checks if all register data is entered
-     * @param regData - all data to be checked
+     *
+     * @param regData        - all data to be checked
      * @param repeatPassword to compare with password
      * @return true or false
      */
-    public boolean isAllRegisterDataEntered (UsersEntity regData, String repeatPassword) {
+    public boolean isAllRegisterDataEntered(UsersEntity regData, String repeatPassword) {
         return regData != null &&
                 regData.getFirstName() != null &&
                 !"".equals(regData.getFirstName()) &&
@@ -415,46 +315,41 @@ public class UserService implements IUserService {
 
     /**
      * removes Book by book Id
+     *
      * @param request - current request
-     * @param userId - id of the User to be deleted
+     * @param userId  - id of the User to be deleted
      */
+    @Override
+    @Transactional(readOnly = false, rollbackFor = DaoException.class)
     public UsersEntity deleteUser(HttpServletRequest request, Integer userId) {
         UsersEntity user;
-        Session currentSession = null;
-        Transaction transaction = null;
         try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
-
             user = userDao.getById(userId);
             if (user != null) {
                 userDao.delete(user);
-                transaction.commit();
                 log.info("Delete user (commit)");
             }
         } catch (DaoException e) {
-            transaction.rollback();
 //            ExceptionsHandler.processException(request, e);
             return null;
-        } finally {
-            util.releaseSession(currentSession);
         }
         return user;
     }
 
     /**
      * Creates and gives a new User
-     * @param result - result
+     *
+     * @param result    - result
      * @param firstName - firstName
-     * @param lastName - lastName
-     * @param login - login
-     * @param password - password
-     * @param isAdmin - isAdmin
+     * @param lastName  - lastName
+     * @param login     - login
+     * @param password  - password
+     * @param isAdmin   - isAdmin
      * @param isBlocked - isBlocked
      * @return a new User
      */
     public UsersEntity setAllDataOfEntity(UsersEntity result, String firstName, String lastName, String login, String password,
-                                       boolean isAdmin, boolean isBlocked) {
+                                          boolean isAdmin, boolean isBlocked) {
         result.setFirstName(firstName);
         result.setLastName(lastName);
         result.setLogin(login);

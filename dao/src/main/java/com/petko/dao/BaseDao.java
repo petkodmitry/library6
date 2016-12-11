@@ -16,13 +16,16 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class BaseDao<T extends Entity> implements Dao<T> {
+public abstract class BaseDao<T extends Entity> implements Dao<T> {
     private static Logger log = Logger.getLogger(BaseDao.class);
     @Autowired
-    protected SessionFactory sessionFactory;
-    protected Session session;
-    @Autowired                                  // в конечном счете удалить
-    protected HibernateUtilLibrary util;        // в конечном счете удалить
+    private SessionFactory sessionFactory;
+
+    protected Session getCurrentSession(){
+        return sessionFactory.getCurrentSession();
+    }
+
+//    protected Session session;
 
     /**
      * adds entity in database
@@ -33,8 +36,8 @@ public class BaseDao<T extends Entity> implements Dao<T> {
     public void save(T entity) throws DaoException {
         try {
             log.info("save(): " + entity);
-            session = util.getSession();
-            session.save(entity);
+//            session = sessionFactory.getCurrentSession();
+            getCurrentSession().save(entity);
         } catch (HibernateException | IllegalArgumentException e) {
             String message = "Error save " + entity + " in Dao.";
             log.error(message + e);
@@ -51,8 +54,8 @@ public class BaseDao<T extends Entity> implements Dao<T> {
     public void update(T entity) throws DaoException {
         try {
             log.info("update(): " + entity);
-            session = util.getSession();
-            session.update(entity);
+//            session = sessionFactory.getCurrentSession();
+            getCurrentSession().update(entity);
         } catch (HibernateException | IllegalArgumentException e) {
             String message = "Error update " + entity + " in Dao.";
             log.error(message + e);
@@ -71,8 +74,8 @@ public class BaseDao<T extends Entity> implements Dao<T> {
     public List<T> getAll(int first, int max, String sortBy, String orderType, Map<String, String> filters) throws DaoException {
         List<T> result;
         try {
-            session = util.getSession();
-            Criteria criteria = session.createCriteria(getPersistentClass());
+//            session = sessionFactory.getCurrentSession();
+            Criteria criteria = getCurrentSession().createCriteria(getPersistentClass());
             criteria.setCacheable(true);
 
             if (sortBy != null && orderType != null) {
@@ -112,12 +115,12 @@ public class BaseDao<T extends Entity> implements Dao<T> {
         return result;
     }
 
-
+    @Override
     public List<T> getAbsolutelyAll() throws DaoException {
         List<T> result;
         try {
-            session = util.getSession();
-            Query query = session.createQuery("FROM " + getPersistentClass().getSimpleName());
+//            session = sessionFactory.getCurrentSession();
+            Query query = getCurrentSession().createQuery("FROM " + getPersistentClass().getSimpleName());
             result = query.list();
             log.info("getAll " + getPersistentClass().getName());
         } catch (HibernateException e) {
@@ -133,12 +136,13 @@ public class BaseDao<T extends Entity> implements Dao<T> {
      * @return List of all elements
      * @throws DaoException
      */
+    @Override
     public Long getTotal() throws DaoException{
         Long result;
         try {
-            session = util.getSession();
+//            session = sessionFactory.getCurrentSession();
             String hql = "SELECT count(id) FROM " + getPersistentClass().getSimpleName();
-            Query query = session.createQuery(hql);
+            Query query = getCurrentSession().createQuery(hql);
             query.setCacheable(true);
             result = (Long) query.uniqueResult();
             log.info("getTotal " + getPersistentClass().getSimpleName() + ". Count=" + result);
@@ -161,8 +165,8 @@ public class BaseDao<T extends Entity> implements Dao<T> {
         log.info("Get ENTITY by id: " + id);
         T entity;
         try {
-            session = util.getSession();
-            entity = (T) session.get(getPersistentClass(), id);
+//            session = sessionFactory.getCurrentSession();
+            entity = (T) getCurrentSession().get(getPersistentClass(), id);
             log.info("get() clazz: " + entity);
         } catch (HibernateException | ClassCastException e) {
             String message = "Error get() " + getPersistentClass() + " in BaseDao.";
@@ -181,8 +185,8 @@ public class BaseDao<T extends Entity> implements Dao<T> {
     public void delete(T entity) throws DaoException {
         try {
             log.info("Delete ENTITY: " + entity);
-            session = util.getSession();
-            session.delete(entity);
+//            session = sessionFactory.getCurrentSession();
+            getCurrentSession().delete(entity);
         } catch (IllegalArgumentException | HibernateException e) {
             String message = "Error deleting " + getPersistentClass() + " in BaseDao.";
             log.error(message + e);

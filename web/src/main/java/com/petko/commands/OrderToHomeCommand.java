@@ -10,26 +10,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 public class OrderToHomeCommand extends AbstractCommand {
-    private static OrderToHomeCommand instance;
     @Autowired
     private ResourceManager resourceManager;
-
-    private OrderToHomeCommand() {
-    }
-
-    public static synchronized OrderToHomeCommand getInstance() {
-        if (instance == null) {
-            instance = new OrderToHomeCommand();
-        }
-        return instance;
-    }
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
         int bookId = Integer.parseInt(request.getParameter("bookId"));
-        orderService.orderToHomeOrToRoom(request, login, bookId, true);
+//        orderService.orderToHomeOrToRoom(request, login, bookId, true);
 
         String page = resourceManager.getProperty(Constants.PAGE_SEARCH_BOOK_FOR_USER);
         setForwardPage(request, page);

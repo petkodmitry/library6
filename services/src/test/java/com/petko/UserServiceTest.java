@@ -11,8 +11,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -27,12 +29,16 @@ public class UserServiceTest {
     @Autowired
     public IUserService userService;
     public static HttpServletRequest request;
+    public static HttpSession session;
+    public static ModelMap modelMap;
 
     @BeforeClass
     public static void init() {
 //        userService = UserService.getInstance();
 //        userDao = UserDao.getInstance();
         request = mock(HttpServletRequest.class);
+        session = mock(HttpSession.class);
+        modelMap = mock(ModelMap.class);
     }
 
     public int getTheLastUserId() throws DaoException {
@@ -45,7 +51,7 @@ public class UserServiceTest {
 
     @Test(expected = NullPointerException.class)
     public void testAdd1() {
-        userService.add(null, null);
+        userService.add(null);
     }
 
     @Test
@@ -58,27 +64,27 @@ public class UserServiceTest {
         usersEntity.setIsAdmin(false);
         usersEntity.setIsBlocked(false);
         usersEntity.setSeminars(new HashSet<>());
-        userService.add(request, usersEntity);
+        userService.add(usersEntity);
         int id = getTheLastUserId();
         usersEntity = userDao.getById(id);
-        userService.setBlockUser(request, usersEntity.getLogin(), true);
+        userService.setBlockUser(usersEntity.getLogin(), true);
         userService.deleteUser(request, id);
     }
 
     @Test(expected = NullPointerException.class)
     public void testGetAll1() {
-        userService.getAll(null/*, null, 0*/);
+        userService.getAll(null, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void testGetAll2() {
-        List<UsersEntity> list = userService.getAll(request/*, "1", 1*/);
+        List<UsersEntity> list = userService.getAll(modelMap, session);
         Assert.assertNull(list);
     }
 
     @Test (expected = NullPointerException.class)
     public void testGetAll3() {
-        userService.getAll(request/*, null, -1_000*/);
+        userService.getAll(modelMap, session);
     }
 
     @Test (expected = NullPointerException.class)
@@ -122,7 +128,7 @@ public class UserServiceTest {
 
     @Test
     public void testIsLoginExists1() {
-        boolean result = userService.isLoginExists(null, null);
+        boolean result = userService.isLoginExists( null);
         Assert.assertTrue(!result);
     }
 
@@ -130,7 +136,7 @@ public class UserServiceTest {
     public void testIsLoginExists2() throws DaoException {
         int userId = getTheLastUserId();
         UsersEntity entity = userDao.getById(userId);
-        boolean result = userService.isLoginExists(request, entity.getLogin());
+        boolean result = userService.isLoginExists(entity.getLogin());
         Assert.assertTrue(result);
     }
 
@@ -154,12 +160,12 @@ public class UserServiceTest {
 
     @Test
     public void testSetBlockUser1() {
-        userService.setBlockUser(null, null, false);
+        userService.setBlockUser(null, false);
     }
 
     @Test
     public void testGetUsersByBlock() {
-        List<UsersEntity> list = userService.getUsersByBlock(null, false);
+        List<UsersEntity> list = userService.getUsersByBlock(false);
         Assert.assertTrue(list != null);
     }
 
@@ -229,6 +235,6 @@ public class UserServiceTest {
     @Test(expected = NullPointerException.class)
     public void testActiveUsers() {
         ActiveUsers.addUser("testLogin");
-        userService.logOut(request, "testLogin");
+        userService.logOut(session, "testLogin");
     }
 }

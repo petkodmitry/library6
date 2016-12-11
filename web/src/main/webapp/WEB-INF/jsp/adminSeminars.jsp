@@ -12,7 +12,7 @@
 <body><H3>Управление семинарами</H3>
 <HR>
 
-<BR><a href="controller?cmd=addSeminar">Добавить семинар</a>
+<BR><a href="addSeminar">Добавить семинар</a>
 <BR><BR>
 
 <c:if test="${allSeminars != null && !allSeminars.isEmpty()}">
@@ -29,10 +29,10 @@
                     <td>${seminar.getSubject()}</td>
                     <td>${seminar.getSeminarDate()}</td>
                     <td>
-                        <a href="controller?cmd=usersOfSeminar&seminarId=${seminar.getSeminarId()}">Участники</a>
+                        <a href="usersOfSeminar?seminarId=${seminar.getSeminarId()}">Участники</a>
                     </td>
                     <td>
-                        <a href="controller?cmd=deleteSeminar&seminarId=${seminar.getSeminarId()}">Удалить</a>
+                        <a href="deleteSeminar?seminarId=${seminar.getSeminarId()}">Удалить</a>
                     </td>
                 </tr>
             </c:forEach>
@@ -40,7 +40,7 @@
     </form>
 </c:if>
 
-<BR><a href="controller?cmd=login">На главную</a>
+<BR><a href="login">На главную</a>
 <c:if test="${requestScope['info'] != null}">
     <BR><BR>${info}<BR>
 </c:if>

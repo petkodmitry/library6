@@ -11,6 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -26,12 +27,14 @@ public class SeminarServiceTest {
     @Autowired
     public ISeminarService seminarService;
     public static HttpServletRequest request;
+    public static ModelMap modelMap;
 
     @BeforeClass
     public static void init() {
 //        seminarService = SeminarService.getInstance();
 //        seminarDao = SeminarDao.getInstance();
         request = mock(HttpServletRequest.class);
+        modelMap = mock(ModelMap.class);
     }
 
     private int getTheLastSeminarId() throws DaoException {
@@ -44,7 +47,7 @@ public class SeminarServiceTest {
 
     @Test(expected = NullPointerException.class)
     public void testAdd1() {
-        seminarService.add(null, null);
+        seminarService.add(null);
     }
 
     @Test
@@ -53,21 +56,21 @@ public class SeminarServiceTest {
         newSeminar.setSeminarDate(new Date());
         newSeminar.setSubject("test");
         newSeminar.setUsers(new HashSet<>());
-        seminarService.add(request, newSeminar);
+        seminarService.add(newSeminar);
         int seminarId = getTheLastSeminarId();
         UserServiceTest userServiceTest = new UserServiceTest();
         UserServiceTest.init();
         int userId = userServiceTest.getTheLastUserId();
         UsersEntity usersEntity = userServiceTest.userDao.getById(userId);
         String userLogin = usersEntity.getLogin();
-        seminarService.subscribeToSeminar(request, userLogin, seminarId);
-        seminarService.unSubscribeSeminar(request, userLogin, seminarId);
-        seminarService.delete(request, seminarId);
+        seminarService.subscribeToSeminar(modelMap, userLogin, seminarId);
+        seminarService.unSubscribeSeminar(modelMap, userLogin, seminarId);
+        seminarService.delete(modelMap, seminarId);
     }
 
     @Test
     public void testGetSeminarsByLogin1() {
-        List<SeminarsEntity> list = seminarService.getSeminarsByLogin(null, null);
+        List<SeminarsEntity> list = seminarService.getSeminarsByLogin(null);
         Assert.assertTrue(list.isEmpty());
     }
 
@@ -78,7 +81,7 @@ public class SeminarServiceTest {
 
     @Test
     public void testSubscribeToSeminar2() {
-        seminarService.subscribeToSeminar(request, null, -1_000);
+        seminarService.subscribeToSeminar(modelMap, null, -1_000);
     }
 
     @Test (expected = NullPointerException.class)
@@ -88,18 +91,18 @@ public class SeminarServiceTest {
 
     @Test
     public void testUnSubscribeToSeminar2() {
-        seminarService.unSubscribeSeminar(request, null, -1_000);
+        seminarService.unSubscribeSeminar(modelMap, null, -1_000);
     }
 
     @Test
     public void testAvailableSeminarsForLogin1() {
-        List<SeminarsEntity> list = seminarService.availableSeminarsForLogin(null, null);
+        List<SeminarsEntity> list = seminarService.availableSeminarsForLogin(null);
         Assert.assertTrue(list != null);
     }
 
     @Test
     public void testGetAll1() {
-        List<SeminarsEntity> list = seminarService.getAll(null);
+        List<SeminarsEntity> list = seminarService.getAll();
         Assert.assertTrue(list != null);
     }
 
@@ -110,18 +113,18 @@ public class SeminarServiceTest {
 
     @Test
     public void testDelete2() {
-        seminarService.delete(request, -1_000);
+        seminarService.delete(modelMap, -1_000);
     }
 
     @Test
     public void testGetById1() {
-        SeminarsEntity result = seminarService.getById(null, -1_000);
+        SeminarsEntity result = seminarService.getById(-1_000);
         Assert.assertNull(result);
     }
 
     @Test
     public void testGetById2() {
-        SeminarsEntity result = seminarService.getById(request, -1_000);
+        SeminarsEntity result = seminarService.getById(-1_000);
         Assert.assertNull(result);
     }
 }

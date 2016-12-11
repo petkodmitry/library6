@@ -13,7 +13,7 @@
 <%--<FORM name="loginForm"--%>
 <s:form name="loginForm"
       method="POST"
-      action= "controller/login">
+      action= "login">
     <%--<INPUT type="hidden" name="cmd" value="login">--%>
     Логин:<BR>
     <INPUT type="text"
@@ -26,7 +26,7 @@
            title="Пароль"
            value=""><BR><BR>
     <INPUT title="Войти" type="submit" value="Войти">
-    <BUTTON style="position: relative; left: 25px" title="Зарегистрироваться в системе" formaction="controller/register" type="submit">Регистрация</BUTTON>
+    <BUTTON style="position: relative; left: 25px" title="Зарегистрироваться в системе" formaction="register" type="submit">Регистрация</BUTTON>
 </s:form>
 <HR>
 <c:if test="${requestScope['errorMessage'] != null}">

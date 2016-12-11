@@ -31,7 +31,7 @@
                     <td>${order.getPlace().toString()}</td>
                     <td>${order.getStartDate()}</td>
                     <td>
-                        <a href="controller?cmd=cancelUserOrder&orderId=${order.getOrderId()}">Отменить заказ</a>
+                        <a href="cancelUserOrder?orderId=${order.getOrderId()}">Отменить заказ</a>
                     </td>
                 </tr>
             </c:forEach>
@@ -39,7 +39,7 @@
     </form>
 </c:if>
 
-<BR><a href="controller?cmd=login">На главную</a>
+<BR><a href="login">На главную</a>
 <BR><BR><c:if test="${requestScope['errorMessage'] != null}">
     Ошибка: ${errorMessage}
 </c:if>

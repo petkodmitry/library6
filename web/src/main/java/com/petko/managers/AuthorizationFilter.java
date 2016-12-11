@@ -12,6 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Map;
 
 @Component
 public class AuthorizationFilter implements Filter {
@@ -21,15 +24,36 @@ public class AuthorizationFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
     }
 
+//    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+//        HttpServletRequest request = (HttpServletRequest) servletRequest;
+//        HttpServletResponse response = (HttpServletResponse) servletResponse;
+//        HttpSession session = request.getSession();
+//        CommandType commandType = CommandType.getCommandType(request.getParameter("cmd"));
+//        if (commandType != CommandType.REGISTER &&
+//                (!CommandType.LOGIN.equals(commandType) && !ActiveUsers.isUserActive((String) session.getAttribute("user")))) {
+//            String page = resourceManager.getProperty(Constants.PAGE_INDEX);
+//            RequestDispatcher dispatcher = request.getRequestDispatcher(page);
+//            dispatcher.forward(request, response);
+//            session.invalidate();
+//        } else {
+//            filterChain.doFilter(servletRequest, servletResponse);
+//        }
+//    }
+
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         HttpSession session = request.getSession();
-        CommandType commandType = CommandType.getCommandType(request.getParameter("cmd"));
-        if (commandType != CommandType.REGISTER &&
-                (!CommandType.LOGIN.equals(commandType) && !ActiveUsers.isUserActive((String) session.getAttribute("user")))) {
-            String page = resourceManager.getProperty(Constants.PAGE_INDEX);
-            RequestDispatcher dispatcher = request.getRequestDispatcher(page);
+        String requestURI = request.getRequestURI();
+        String command = requestURI.substring(requestURI.lastIndexOf("/") + 1);
+//        CommandType commandType = CommandType.getCommandType(request.getParameter("cmd"));
+//        if (commandType != CommandType.REGISTER &&
+//                (!CommandType.LOGIN.equals(commandType) && !ActiveUsers.isUserActive((String) session.getAttribute("user")))) {
+        if (!"register".equals(command.toLowerCase()) &&
+                (!"login".equals(command.toLowerCase()) && !ActiveUsers.isUserActive((String) session.getAttribute("user")))) {
+//            String page = resourceManager.getProperty(Constants.PAGE_INDEX);
+//            RequestDispatcher dispatcher = request.getRequestDispatcher(page);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("login");
             dispatcher.forward(request, response);
             session.invalidate();
         } else {

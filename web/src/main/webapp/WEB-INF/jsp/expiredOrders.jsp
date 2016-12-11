@@ -40,7 +40,7 @@
                 <td>${order.isBlocked() ? "да" : "НЕТ"}</td>
                 <td>
                     <c:if test="${!order.isBlocked()}">
-                        <a href="controller?cmd=blockUser&login=${order.getLogin()}">Заблокировать</a>
+                        <a href="blockUser?login=${order.getLogin()}">Заблокировать</a>
                     </c:if>
                 </td>
             </tr>
@@ -49,7 +49,7 @@
 </form>
 </c:if>
 
-<BR><a href="controller?cmd=login">На главную</a>
+<BR><a href="login">На главную</a>
 <BR><BR><c:if test="${requestScope['errorMessage'] != null}">
     Ошибка: ${errorMessage}
 </c:if>

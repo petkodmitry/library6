@@ -7,6 +7,7 @@ import com.petko.entities.OrdersEntity;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,7 @@ import java.util.List;
 @Repository
 public class OrderDao extends BaseDao<OrdersEntity> implements IOrderDao {
     private static Logger log = Logger.getLogger(OrderDao.class);
+    private Session session;
 
     /**
      * all Orders of a User by specific Status
@@ -28,7 +30,7 @@ public class OrderDao extends BaseDao<OrdersEntity> implements IOrderDao {
     public List<OrdersEntity> getOrdersByLoginAndStatus(String login, OrderStatus orderStatus) throws DaoException {
         List<OrdersEntity> result;
         try {
-            session = util.getSession();
+            session = getCurrentSession();
 
             Query query = null;
             if (login != null && orderStatus != null) {
@@ -45,9 +47,7 @@ public class OrderDao extends BaseDao<OrdersEntity> implements IOrderDao {
                 query = session.createQuery(hql);
                 query.setParameter("loginParam", login);
             }
-
             result = query.list();
-
             log.info("getOrdersByLoginAndStatus in OrderDao");
         } catch (HibernateException | NullPointerException e) {
             String message = "Error getOrdersByLoginAndStatus in OrderDao";
@@ -67,7 +67,7 @@ public class OrderDao extends BaseDao<OrdersEntity> implements IOrderDao {
     public List<OrdersEntity> getOrdersByStatusAndEndDate(OrderStatus orderStatus, Date endDate) throws DaoException {
         List<OrdersEntity> result;
         try {
-            session = util.getSession();
+            session = getCurrentSession();
 
             String hql = "SELECT O FROM OrdersEntity O WHERE O.status=:statusParam AND O.endDate<:endDateParam";
             Query query = session.createQuery(hql);
@@ -96,7 +96,7 @@ public class OrderDao extends BaseDao<OrdersEntity> implements IOrderDao {
     public List<OrdersEntity> getOrdersByLoginBookIdStatuses(String login, BooksEntity bookEntity, String[] orderStatuses) throws DaoException {
         List<OrdersEntity> result;
         try {
-            session = util.getSession();
+            session = getCurrentSession();
 
             String title = bookEntity.getTitle();
             String author = bookEntity.getAuthor();

@@ -27,7 +27,7 @@
                 <td>${user.getFirstName()}</td>
                 <td>${user.getLastName()}</td>
                 <td>
-                    <a href="controller?cmd=unblockUser&login=${user.getLogin()}">Разблокировать</a>
+                    <a href="unblockUser?login=${user.getLogin()}">Разблокировать</a>
                 </td>
             </tr>
         </c:forEach>
@@ -35,7 +35,7 @@
 </form>
 </c:if>
 
-<BR><a href="controller?cmd=login">На главную</a>
+<BR><a href="login">На главную</a>
 <BR><BR><c:if test="${requestScope['errorMessage'] != null}">
     Ошибка: ${errorMessage}
 </c:if>

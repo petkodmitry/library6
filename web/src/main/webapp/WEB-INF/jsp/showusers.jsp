@@ -21,7 +21,7 @@
     </c:otherwise>
 </c:choose>
 
-<form method="post" action="controller?cmd=showUsers&page=${page}">
+<form method="post" action="showUsers?page=${page}">
     <table>
         <tr>
             <td>количество элементов на странице:</td>
@@ -46,37 +46,37 @@
     <tbody>
     <%--Sorting row of the table--%>
     <tr>
-        <td><a href="controller?cmd=showUsers&page=1&sortBy=userId&orderType=${"userId".equals(sortBy) ?
+        <td><a href="showUsers?page=1&sortBy=userId&orderType=${"userId".equals(sortBy) ?
                     ("asc".equals(orderType) ? "desc" : "asc") : "asc"}">ID</a>
             <c:if test="${'asc'.equals(orderType) && 'userId'.equals(sortBy)}">↓</c:if>
             <c:if test="${'desc'.equals(orderType) && 'userId'.equals(sortBy)}">↑</c:if>
         </td>
-        <td><a href="controller?cmd=showUsers&page=1&sortBy=firstName&orderType=${"firstName".equals(sortBy) ?
+        <td><a href="showUsers?page=1&sortBy=firstName&orderType=${"firstName".equals(sortBy) ?
                     ("asc".equals(orderType) ? "desc" : "asc") : "asc"}">Имя</a>
             <c:if test="${'asc'.equals(orderType) && 'firstName'.equals(sortBy)}">↓</c:if>
             <c:if test="${'desc'.equals(orderType) && 'firstName'.equals(sortBy)}">↑</c:if>
         </td>
-        <td><a href="controller?cmd=showUsers&page=1&sortBy=lastName&orderType=${"lastName".equals(sortBy) ?
+        <td><a href="showUsers?page=1&sortBy=lastName&orderType=${"lastName".equals(sortBy) ?
                     ("asc".equals(orderType) ? "desc" : "asc") : "asc"}">Фамилия</a>
             <c:if test="${'asc'.equals(orderType) && 'lastName'.equals(sortBy)}">↓</c:if>
             <c:if test="${'desc'.equals(orderType) && 'lastName'.equals(sortBy)}">↑</c:if>
         </td>
-        <td><a href="controller?cmd=showUsers&page=1&sortBy=login&orderType=${"login".equals(sortBy) ?
+        <td><a href="showUsers?page=1&sortBy=login&orderType=${"login".equals(sortBy) ?
                     ("asc".equals(orderType) ? "desc" : "asc") : "asc"}">Логин</a>
             <c:if test="${'asc'.equals(orderType) && 'login'.equals(sortBy)}">↓</c:if>
             <c:if test="${'desc'.equals(orderType) && 'login'.equals(sortBy)}">↑</c:if>
         </td>
-        <td><a href="controller?cmd=showUsers&page=1&sortBy=password&orderType=${"password".equals(sortBy) ?
+        <td><a href="showUsers?page=1&sortBy=password&orderType=${"password".equals(sortBy) ?
                     ("asc".equals(orderType) ? "desc" : "asc") : "asc"}">Пароль</a>
             <c:if test="${'asc'.equals(orderType) && 'password'.equals(sortBy)}">↓</c:if>
             <c:if test="${'desc'.equals(orderType) && 'password'.equals(sortBy)}">↑</c:if>
         </td>
-        <td><a href="controller?cmd=showUsers&page=1&sortBy=isAdmin&orderType=${"isAdmin".equals(sortBy) ?
+        <td><a href="showUsers?page=1&sortBy=isAdmin&orderType=${"isAdmin".equals(sortBy) ?
                     ("asc".equals(orderType) ? "desc" : "asc") : "asc"}">Является админом</a>
             <c:if test="${'asc'.equals(orderType) && 'isAdmin'.equals(sortBy)}">↓</c:if>
             <c:if test="${'desc'.equals(orderType) && 'isAdmin'.equals(sortBy)}">↑</c:if>
         </td>
-        <td><a href="controller?cmd=showUsers&page=1&sortBy=isBlocked&orderType=${"isBlocked".equals(sortBy) ?
+        <td><a href="showUsers?page=1&sortBy=isBlocked&orderType=${"isBlocked".equals(sortBy) ?
                     ("asc".equals(orderType) ? "desc" : "asc") : "asc"}">Заблокирован</a>
             <c:if test="${'asc'.equals(orderType) && 'isBlocked'.equals(sortBy)}">↓</c:if>
             <c:if test="${'desc'.equals(orderType) && 'isBlocked'.equals(sortBy)}">↑</c:if>
@@ -84,60 +84,68 @@
     </tr>
     <%--Filtering row of the table--%>
     <tr>
-        <td>
-            <form style="height: 5px" method="POST" action="controller">
+        <%--<td>
+            <form style="height: 5px" method="POST" action="">
                 <input style="width: 50px" type="text" title="установить фильтр" name="userIdFilter"
                        value="${sessionScope.get("filters").get("userId")}"/>
-                <input type="submit" formaction="controller?cmd=showUsers&page=1" hidden="hidden"/>
-                <a href="controller?cmd=showUsers&page=${sessionScope.get("filters").get("userId") == null ? page : 1}&filterRemove=userId">X</a>
+                <input type="submit" formaction="showUsers&page=1" hidden="hidden"/>
+                <a href="showUsers&page=${sessionScope.get("filters").get("userId") == null ? page : 1}&filterRemove=userId">X</a>
+            </form>
+        </td>--%>
+        <td>
+            <form style="height: 5px" method="POST" action="">
+                <input style="width: 50px" type="text" title="установить фильтр" name="filterText"
+                       value="${sessionScope.get("filters").get("userId")}"/>
+                <input type="submit" formaction="showUsers?page=1&filterSet=userId" hidden="hidden"/>
+                <a href="showUsers?page=${sessionScope.get("filters").get("userId") == null ? page : 1}&filterRemove=userId">X</a>
             </form>
         </td>
         <td>
-            <form style="height: 5px" method="POST" action="controller">
-                <input style="width: 50px" type="text" title="установить фильтр" name="firstNameFilter"
+            <form style="height: 5px" method="POST" action="">
+                <input style="width: 50px" type="text" title="установить фильтр" name="filterText"
                        value="${sessionScope.get("filters").get("firstName")}"/>
-                <input type="submit" formaction="controller?cmd=showUsers&page=1" hidden="hidden"/>
-                <a href="controller?cmd=showUsers&page=${sessionScope.get("filters").get("firstName") == null ? page : 1}&filterRemove=firstName">X</a>
+                <input type="submit" formaction="showUsers?page=1&filterSet=firstName" hidden="hidden"/>
+                <a href="showUsers?page=${sessionScope.get("filters").get("firstName") == null ? page : 1}&filterRemove=firstName">X</a>
             </form>
         </td>
         <td>
-            <form style="height: 5px" method="POST" action="controller">
-                <input style="width: 50px" type="text" title="установить фильтр" name="lastNameFilter"
+            <form style="height: 5px" method="POST" action="">
+                <input style="width: 50px" type="text" title="установить фильтр" name="filterText"
                        value="${sessionScope.get("filters").get("lastName")}"/>
-                <input type="submit" formaction="controller?cmd=showUsers&page=1" hidden="hidden"/>
-                <a href="controller?cmd=showUsers&page=${sessionScope.get("filters").get("lastName") == null ? page : 1}&filterRemove=lastName">X</a>
+                <input type="submit" formaction="showUsers?page=1&filterSet=lastName" hidden="hidden"/>
+                <a href="showUsers?page=${sessionScope.get("filters").get("lastName") == null ? page : 1}&filterRemove=lastName">X</a>
             </form>
         </td>
         <td>
-            <form style="height: 5px" method="POST" action="controller">
-                <input style="width: 50px" type="text" title="установить фильтр" name="loginFilter"
+            <form style="height: 5px" method="POST" action="">
+                <input style="width: 50px" type="text" title="установить фильтр" name="filterText"
                        value="${sessionScope.get("filters").get("login")}"/>
-                <input type="submit" formaction="controller?cmd=showUsers&page=1" hidden="hidden"/>
-                <a href="controller?cmd=showUsers&page=${sessionScope.get("filters").get("login") == null ? page : 1}&filterRemove=login">X</a>
+                <input type="submit" formaction="showUsers?page=1&filterSet=login" hidden="hidden"/>
+                <a href="showUsers?page=${sessionScope.get("filters").get("login") == null ? page : 1}&filterRemove=login">X</a>
             </form>
         </td>
         <td>
-            <form style="height: 5px" method="POST" action="controller">
-                <input style="width: 50px" type="text" title="установить фильтр" name="passwordFilter"
+            <form style="height: 5px" method="POST" action="">
+                <input style="width: 50px" type="text" title="установить фильтр" name="filterText"
                        value="${sessionScope.get("filters").get("password")}"/>
-                <input type="submit" formaction="controller?cmd=showUsers&page=1" hidden="hidden"/>
-                <a href="controller?cmd=showUsers&page=${sessionScope.get("filters").get("password") == null ? page : 1}&filterRemove=password">X</a>
+                <input type="submit" formaction="showUsers?page=1&filterSet=password" hidden="hidden"/>
+                <a href="showUsers?page=${sessionScope.get("filters").get("password") == null ? page : 1}&filterRemove=password">X</a>
             </form>
         </td>
         <td>
-            <form style="height: 5px" method="POST" action="controller">
-                <input style="width: 50px" type="text" title="установить фильтр" name="isAdminFilter"
+            <form style="height: 5px" method="POST" action="">
+                <input style="width: 50px" type="text" title="установить фильтр" name="filterText"
                        value="${sessionScope.get("filters").get("isAdmin")}"/>
-                <input type="submit" formaction="controller?cmd=showUsers&page=1" hidden="hidden"/>
-                <a href="controller?cmd=showUsers&page=${sessionScope.get("filters").get("isAdmin") == null ? page : 1}&filterRemove=isAdmin">X</a>
+                <input type="submit" formaction="showUsers?page=1&filterSet=isAdmin" hidden="hidden"/>
+                <a href="showUsers?page=${sessionScope.get("filters").get("isAdmin") == null ? page : 1}&filterRemove=isAdmin">X</a>
             </form>
         </td>
         <td>
-            <form style="height: 5px" method="POST" action="controller">
-                <input style="width: 50px" type="text" title="установить фильтр" name="isBlockedFilter"
+            <form style="height: 5px" method="POST" action="">
+                <input style="width: 50px" type="text" title="установить фильтр" name="filterText"
                        value="${sessionScope.get("filters").get("isBlocked")}"/>
-                <input type="submit" formaction="controller?cmd=showUsers&page=1" hidden="hidden"/>
-                <a href="controller?cmd=showUsers&page=${sessionScope.get("filters").get("isBlocked") == null ? page : 1}&filterRemove=isBlocked">X</a>
+                <input type="submit" formaction="showUsers?page=1&filterSet=isBlocked" hidden="hidden"/>
+                <a href="showUsers?page=${sessionScope.get("filters").get("isBlocked") == null ? page : 1}&filterRemove=isBlocked">X</a>
             </form>
         </td>
     </tr>
@@ -183,7 +191,7 @@
                         &nbsp;&nbsp;&nbsp;&nbsp;${page2}
                     </c:when>
                     <c:otherwise>
-                        &nbsp;&nbsp;&nbsp;<a href="controller?cmd=showUsers&page=${page1}"> ${page2} </a>
+                        &nbsp;&nbsp;&nbsp;<a href="showUsers?page=${page1}"> ${page2} </a>
                     </c:otherwise>
                 </c:choose>
             </c:when>
@@ -201,7 +209,10 @@
 </c:if>
 
 <HR>
-<BR><a href="controller?cmd=login">На главную</a><BR>
+<BR><a href="login">На главную</a><BR>
+<c:if test="${requestScope['info'] != null}">
+    <BR><BR>${info}<BR>
+</c:if>
 <c:if test="${requestScope['errorMessage'] != null}">
     <BR>Ошибка: ${errorMessage}
 </c:if>

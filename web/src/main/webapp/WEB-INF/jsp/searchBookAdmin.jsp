@@ -13,9 +13,9 @@
 </head>
 <body><H3>Управление книгами администратором</H3>
 <HR>
-<BR><a href="controller?cmd=addBook">Добавить книгу в базу</a><BR><BR>
+<BR><a href="addBook">Добавить книгу в базу</a><BR><BR>
 <BR>Поиск книг (по автору или названию)
-<form method="post" action="controller">
+<form method="post" action="">
     <INPUT type="hidden" name="cmd" value="searchBookAdmin">
     <table>
         <tr>
@@ -56,7 +56,7 @@
                         </td>
                         <td>
                             <c:if test="${book.getIsBusy() == false}">
-                                <a href="controller?cmd=deleteBook&bookId=${book.getBookId()}">Удалить</a>
+                                <a href="deleteBook?bookId=${book.getBookId()}">Удалить</a>
                                 <%--<a href="#" onclick="deleteBook(${book.getBookId()})">Удалить</a>--%>
                             </c:if>
                         </td>
@@ -67,7 +67,7 @@
     </c:if>
 </div>
 
-<a href="controller?cmd=login">На главную</a>
+<a href="login">На главную</a>
 <BR><BR><c:if test="${requestScope['errorMessage'] != null}">
     Ошибка: ${errorMessage}
 </c:if>

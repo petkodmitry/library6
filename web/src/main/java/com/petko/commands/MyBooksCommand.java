@@ -13,19 +13,8 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 
 public class MyBooksCommand extends AbstractCommand{
-    private static MyBooksCommand instance;
     @Autowired
     private ResourceManager resourceManager;
-
-    private MyBooksCommand() {
-    }
-
-    public static synchronized MyBooksCommand getInstance() {
-        if (instance == null) {
-            instance = new MyBooksCommand();
-        }
-        return instance;
-    }
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
@@ -33,7 +22,7 @@ public class MyBooksCommand extends AbstractCommand{
         String login = (String) session.getAttribute("user");
         String page = resourceManager.getProperty(Constants.PAGE_MY_BOOKS);
         List<FullOrdersList> myBooksList;
-        myBooksList = orderService.getOrdersByLoginAndStatus(request, login, OrderStatus.ON_HAND);
+        myBooksList = orderService.getOrdersByLoginAndStatus(login, OrderStatus.ON_HAND);
         session.setAttribute("myBooksList", myBooksList);
 
         setForwardPage(request, page);
