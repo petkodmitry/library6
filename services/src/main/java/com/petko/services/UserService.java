@@ -2,15 +2,10 @@ package com.petko.services;
 
 import com.petko.ActiveUsers;
 import com.petko.DaoException;
-import com.petko.dao.Dao;
 import com.petko.dao.IUserDao;
 import com.petko.entities.UsersEntity;
-import com.petko.utils.HibernateUtilLibrary;
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
@@ -148,7 +143,6 @@ public class UserService implements IUserService {
             log.info("getAll users (commit)");
         } catch (DaoException e) {
             return Collections.emptyList();
-//            ExceptionsHandler.processException(request, e);
         }
         return result;
     }
@@ -218,7 +212,6 @@ public class UserService implements IUserService {
             if (login != null && login.equals(entityLogin)) result = true;
             log.info("Get user by login (commit)");
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
         }
         return result;
     }
@@ -246,7 +239,6 @@ public class UserService implements IUserService {
             userDao.save(entity);
             log.info("Save user to DB (commit)");
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
         }
     }
 
@@ -268,7 +260,6 @@ public class UserService implements IUserService {
             log.info("Get user by login (commit)");
             log.info("Update user (commit)");
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
         }
     }
 
@@ -287,7 +278,6 @@ public class UserService implements IUserService {
             log.info("Get all users by block status (commit)");
             return allByBlock;
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
             return Collections.emptyList();
         }
     }
@@ -330,7 +320,6 @@ public class UserService implements IUserService {
                 log.info("Delete user (commit)");
             }
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
             return null;
         }
         return user;

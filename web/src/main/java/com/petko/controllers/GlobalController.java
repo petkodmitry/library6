@@ -1,5 +1,6 @@
-package com.petko.managers;
+package com.petko.controllers;
 
+import com.petko.managers.ResourceManager;
 import com.petko.constants.Constants;
 import com.petko.entities.BooksEntity;
 import com.petko.entities.OrderStatus;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import java.text.ParseException;
@@ -127,6 +129,22 @@ public class GlobalController {
         }
         return resourceManager.getProperty(Constants.PAGE_SEARCH_BOOK_FOR_USER);
     }
+    /*@RequestMapping(value = "/{path:orderTo+[A-Za-z-]+}", method = RequestMethod.GET)
+    public ModelAndView orderToHome(ModelMap modelMap, HttpSession session, String bookId,
+                                    @PathVariable String path){
+        ModelAndView modelAndView = new ModelAndView();
+        String login = (String) session.getAttribute("user");
+        try {
+            int bId = Integer.parseInt(bookId);
+            if ("orderToHome".equals(path)) orderService.orderToHomeOrToRoom(modelMap, login, bId, true);
+            else if ("orderToReadingRoom".equals(path)) orderService.orderToHomeOrToRoom(modelMap, login, bId, false);
+        } catch (NumberFormatException e) {
+            modelMap.addAttribute(errorMessageAttribute, "Невозможно распознать ID книги.");
+        }
+        modelAndView.addAllObjects(modelMap);
+        return modelAndView;
+//        return "redirect:" + resourceManager.getProperty(Constants.PAGE_SEARCH_BOOK_FOR_USER);
+    }*/
 
     @RequestMapping(value = "/myOrders", method = RequestMethod.GET)
     public String myOrders(ModelMap modelMap, HttpSession session){
@@ -249,11 +267,8 @@ public class GlobalController {
              */
             else {
                 regData = (UsersEntity) session.getAttribute("regData");
-//                regData = userService.setAllDataOfEntity(regData, request.getParameter("newName"), request.getParameter("newLastName"),
-//                        request.getParameter("newLogin"), request.getParameter("newPassword"), false, false);
-//                String repeatPassword = request.getParameter("repeatPassword");
                 regData = userService.setAllDataOfEntity(regData, newName, newLastName,
-                        newLogin, newPassword, false, false);
+                                                        newLogin, newPassword, false, false);
                 /**
                  * if 'login' is entered
                  */

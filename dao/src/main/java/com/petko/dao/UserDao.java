@@ -6,8 +6,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,25 +22,7 @@ public class UserDao extends BaseDao<UsersEntity> implements IUserDao {
      * @return User by his Login
      * @throws DaoException
      */
-    /**
-    public UsersEntity getByLogin(String login) throws DaoException {
-        UsersEntity result;
-        try {
-            session = util.getSession();
-            String hql = "select U from UsersEntity U where U.login=:param";
-            Query query = session.createQuery(hql);
-//            query.setCacheable(true);
-            query.setParameter("param", login);
-            result = (UsersEntity) query.uniqueResult();
-            log.info("get user by login");
-        } catch (HibernateException e) {
-            String message = "Error getting user by login in UserDao";
-            log.error(message + e);
-            throw new DaoException(message);
-        }
-        return result;
-    }
-    */
+    @Override
     public UsersEntity getByLogin(String login) throws DaoException {
         UsersEntity result;
         try {
@@ -67,6 +47,7 @@ public class UserDao extends BaseDao<UsersEntity> implements IUserDao {
      * @return Users by their Logins
      * @throws DaoException
      */
+    @Override
     public List<UsersEntity> getAllByCoupleLogins(Set<String> logins) throws DaoException {
         List<UsersEntity> result;
         try {
@@ -91,6 +72,7 @@ public class UserDao extends BaseDao<UsersEntity> implements IUserDao {
      * @return Users by their Block status
      * @throws DaoException
      */
+    @Override
     public List<UsersEntity> getAllByBlockStatus(Boolean isBlocked) throws DaoException {
         List<UsersEntity> result;
         try {

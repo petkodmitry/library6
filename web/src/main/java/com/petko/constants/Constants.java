@@ -27,7 +27,4 @@ public class Constants {
 
     public final static String ERROR_MESSAGE_ATTRIBUTE = "errorMessage";
     public final static String INFO_MESSAGE_ATTRIBUTE = "info";
-    public final static String FORWARD_PAGE_ATTRIBUTE = "forward";
-
-    public final static String USER_SET = "userSet";
 }

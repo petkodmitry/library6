@@ -4,17 +4,13 @@ import com.petko.DaoException;
 import com.petko.constants.Constants;
 import com.petko.dao.*;
 import com.petko.entities.*;
-import com.petko.utils.HibernateUtilLibrary;
 import com.petko.vo.FullOrdersList;
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -88,7 +84,6 @@ public class OrderService implements IOrderService {
             }
             log.info("Get orders by status and endDate (commit)");
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
             return Collections.emptyList();
         }
         return result;
@@ -119,7 +114,6 @@ public class OrderService implements IOrderService {
                 log.info("update order (commit)");
             }
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
         }
     }
 
@@ -175,7 +169,6 @@ public class OrderService implements IOrderService {
             log.info("Get book by ID (commit)");
             log.info("Get orders by login, bookId and statuses (commit)");
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
         }
     }
 
@@ -225,7 +218,6 @@ public class OrderService implements IOrderService {
             }
             log.info("Get order by id (commit)");
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
         }
     }
 
@@ -278,7 +270,6 @@ public class OrderService implements IOrderService {
             }
             log.info("Get order by id (commit)");
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
         }
     }
 
@@ -290,7 +281,6 @@ public class OrderService implements IOrderService {
             answer = orderDao.getById(orderID);
             log.info("Get order by id (commit)");
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
         }
         return answer;
     }

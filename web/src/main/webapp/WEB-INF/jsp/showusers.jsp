@@ -84,14 +84,6 @@
     </tr>
     <%--Filtering row of the table--%>
     <tr>
-        <%--<td>
-            <form style="height: 5px" method="POST" action="">
-                <input style="width: 50px" type="text" title="установить фильтр" name="userIdFilter"
-                       value="${sessionScope.get("filters").get("userId")}"/>
-                <input type="submit" formaction="showUsers&page=1" hidden="hidden"/>
-                <a href="showUsers&page=${sessionScope.get("filters").get("userId") == null ? page : 1}&filterRemove=userId">X</a>
-            </form>
-        </td>--%>
         <td>
             <form style="height: 5px" method="POST" action="">
                 <input style="width: 50px" type="text" title="установить фильтр" name="filterText"

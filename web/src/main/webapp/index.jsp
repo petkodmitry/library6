@@ -10,11 +10,9 @@
 <HEAD><TITLE>Library login page</TITLE></HEAD>
 <BODY><H3>Введите логин и пароль для входа в библиотеку:</H3>
 <HR>
-<%--<FORM name="loginForm"--%>
-<s:form name="loginForm"
+<FORM name="loginForm"
       method="POST"
-      action= "login">
-    <%--<INPUT type="hidden" name="cmd" value="login">--%>
+      action="login">
     Логин:<BR>
     <INPUT type="text"
            name="login"
@@ -26,8 +24,11 @@
            title="Пароль"
            value=""><BR><BR>
     <INPUT title="Войти" type="submit" value="Войти">
-    <BUTTON style="position: relative; left: 25px" title="Зарегистрироваться в системе" formaction="register" type="submit">Регистрация</BUTTON>
-</s:form>
+    <BUTTON style="position: relative; left: 25px" title="Зарегистрироваться в системе" formaction="register"
+            type="submit">Регистрация
+    </BUTTON>
+</form>
+
 <HR>
 <c:if test="${requestScope['errorMessage'] != null}">
     Ошибка: ${errorMessage}

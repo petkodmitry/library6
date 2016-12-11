@@ -7,16 +7,13 @@
 <%@ page errorPage="error.jsp" %>
 <html>
 <head>
-    <%--<script type="text/javascript" src="js/jquery-3.1.1.js"></script>--%>
-    <%--<script type="text/javascript" src="js/deleteBook.js"></script>--%>
     <title>Управление книгами</title>
 </head>
 <body><H3>Управление книгами администратором</H3>
 <HR>
 <BR><a href="addBook">Добавить книгу в базу</a><BR><BR>
 <BR>Поиск книг (по автору или названию)
-<form method="post" action="">
-    <INPUT type="hidden" name="cmd" value="searchBookAdmin">
+<form method="post" action="searchBookAdmin">
     <table>
         <tr>
             <td><input name="searchTextInBook" title="Введите слово или часть слова для поиска книги" type="text"
@@ -57,7 +54,6 @@
                         <td>
                             <c:if test="${book.getIsBusy() == false}">
                                 <a href="deleteBook?bookId=${book.getBookId()}">Удалить</a>
-                                <%--<a href="#" onclick="deleteBook(${book.getBookId()})">Удалить</a>--%>
                             </c:if>
                         </td>
                     </tr>

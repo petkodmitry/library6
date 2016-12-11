@@ -6,8 +6,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -24,6 +22,7 @@ public class SeminarDao extends BaseDao<SeminarsEntity> implements ISeminarDao {
      * @return List of SeminarsEntity considering given options
      * @throws DaoException
      */
+    @Override
     public List<SeminarsEntity> getSeminarsByLogin(String login) throws DaoException {
         List<SeminarsEntity> result;
         try {
@@ -48,6 +47,7 @@ public class SeminarDao extends BaseDao<SeminarsEntity> implements ISeminarDao {
      * @return List of future Seminars
      * @throws DaoException
      */
+    @Override
     public List<SeminarsEntity> getAll() throws DaoException {
         List<SeminarsEntity> result;
         try {

@@ -5,7 +5,6 @@ import com.petko.entities.OrdersEntity;
 import com.petko.vo.FullOrdersList;
 import org.springframework.ui.ModelMap;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 

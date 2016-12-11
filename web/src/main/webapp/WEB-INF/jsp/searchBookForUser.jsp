@@ -12,8 +12,7 @@
 <body><H3>Поиск книги для заказа</H3>
 <HR>
 <BR>Введите часть названия книги или имени автора
-<form method="post" action="">
-    <INPUT type="hidden" name="cmd" value="searchbook">
+<form method="post" action="searchBook">
     <table>
         <tr>
             <td><input name="searchTextInBook" title="Введите слово или часть слова для поиска книги" type="text"

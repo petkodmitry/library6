@@ -5,16 +5,16 @@ import static org.mockito.Mockito.*;
 import com.petko.dao.*;
 import com.petko.entities.*;
 import com.petko.services.IOrderService;
-import com.petko.services.OrderService;
-import com.petko.utils.HibernateUtilLibrary;
 import com.petko.vo.FullOrdersList;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +25,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
+@ContextConfiguration("/testContext.xml")
+@RunWith(SpringJUnit4ClassRunner.class)
+@Transactional
 public class OrderServiceTest {
     @Autowired
     public IOrderDao orderDao;
@@ -34,8 +37,7 @@ public class OrderServiceTest {
     public IUserDao userDao;
     @Autowired
     public IBookDao bookDao;
-    @Autowired
-    private HibernateUtilLibrary util;
+
     public static HttpServletRequest request;
     public static ModelMap modelMap;
 
@@ -56,9 +58,6 @@ public class OrderServiceTest {
     }
 
     private OrdersEntity saveAndGetNewOrderEntity() throws DaoException {
-        Session currentSession = util.getSession();
-        Transaction transaction = currentSession.beginTransaction();
-
         OrdersEntity orderEntity = new OrdersEntity();
         orderEntity.setLogin("who");
         orderEntity.setBookId(1);
@@ -67,13 +66,11 @@ public class OrderServiceTest {
         orderEntity.setStartDate(new Date());
         orderEntity.setEndDate(new Date());
         orderDao.save(orderEntity);
-
-        transaction.commit();
         int pastId = getTheLastOrderId();
         return orderDao.getById(pastId);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testGetOrdersByLoginAndStatus1() {
         orderService.getOrdersByLoginAndStatus(null, null);
     }

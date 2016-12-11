@@ -11,8 +11,12 @@ import com.petko.services.IBookService;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Assert;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,6 +28,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
+@ContextConfiguration("/testContext.xml")
+@RunWith(SpringJUnit4ClassRunner.class)
+@Transactional
 public class BookServiceTest {
 //    public static BookService bookService;
     @Autowired
@@ -49,7 +56,7 @@ public class BookServiceTest {
         return (int) ids[ids.length - 1];
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testAdd1() {
         bookService.add(null);
     }

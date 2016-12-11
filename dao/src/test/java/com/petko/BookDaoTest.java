@@ -1,22 +1,27 @@
 package com.petko;
 
-import com.petko.dao.BookDao;
 import com.petko.dao.IBookDao;
 import com.petko.entities.BooksEntity;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Assert;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Component
+@ContextConfiguration("/testContext.xml")
+@RunWith(SpringJUnit4ClassRunner.class)
+@Transactional
 public class BookDaoTest {
     @Autowired
-    public IBookDao bookDao;
+    public IBookDao bookDao/* = new BookDao()*/;
 
     /*@BeforeClass
     public static void init() {

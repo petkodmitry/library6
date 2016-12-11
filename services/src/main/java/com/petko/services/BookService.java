@@ -2,17 +2,12 @@ package com.petko.services;
 
 import com.petko.DaoException;
 import com.petko.dao.IBookDao;
-import com.petko.dao.IUserDao;
 import com.petko.entities.BooksEntity;
-import com.petko.utils.HibernateUtilLibrary;
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @Service
@@ -39,7 +34,6 @@ public class BookService implements IBookService {
             if (!isUserAdmin) result = showBooksByOneExemplar(result);
             log.info("Search books by (login or title) and status (commit)");
         } catch (DaoException | NullPointerException e) {
-//            ExceptionsHandler.processException(request, e);
             return Collections.emptyList();
         }
         return result;
@@ -82,7 +76,6 @@ public class BookService implements IBookService {
                 log.info("Delete book (commit)");
             }
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
             return null;
         }
         return book;
@@ -99,7 +92,6 @@ public class BookService implements IBookService {
             bookDao.save(bookEntity);
             log.info("Save book (commit)");
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
         }
     }
 }

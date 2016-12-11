@@ -9,8 +9,12 @@ import static org.mockito.Mockito.*;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +26,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
+@ContextConfiguration("/testContext.xml")
+@RunWith(SpringJUnit4ClassRunner.class)
+@Transactional
 public class UserServiceTest {
 //    public static UserService userService;
     @Autowired
@@ -49,7 +56,7 @@ public class UserServiceTest {
         return (int) ids[ids.length - 1];
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testAdd1() {
         userService.add(null);
     }
@@ -92,15 +99,15 @@ public class UserServiceTest {
         userService.logOut(null, null);
     }
 
-    /*@Test
+    @Test
     public void testIsLoginSuccess1() throws DaoException {
-        boolean result = userService.isLoginSuccess(null, null, null);
+        boolean result = userService.isLoginSuccess(null, null);
         Assert.assertTrue(!result);
     }
 
     @Test
     public void testIsLoginSuccess2() throws DaoException {
-        boolean result = userService.isLoginSuccess(null, "1", "2");
+        boolean result = userService.isLoginSuccess("1", "2");
         Assert.assertTrue(!result);
     }
 
@@ -108,13 +115,13 @@ public class UserServiceTest {
     public void testIsLoginSuccess3() throws DaoException {
         int userId = getTheLastUserId();
         UsersEntity entity = userDao.getById(userId);
-        boolean result = userService.isLoginSuccess(request, entity.getLogin(), entity.getPassword());
+        boolean result = userService.isLoginSuccess(entity.getLogin(), entity.getPassword());
         Assert.assertTrue(result);
     }
 
     @Test
     public void testIsAdminUser1() {
-        boolean result = userService.isAdminUser(null, null);
+        boolean result = userService.isAdminUser(null);
         Assert.assertTrue(!result);
     }
 
@@ -122,9 +129,9 @@ public class UserServiceTest {
     public void testIsAdminUser2() throws DaoException {
         int userId = getTheLastUserId();
         UsersEntity entity = userDao.getById(userId);
-        boolean result = userService.isAdminUser(request, entity.getLogin());
+        boolean result = userService.isAdminUser(entity.getLogin());
         Assert.assertTrue(!result);
-    }*/
+    }
 
     @Test
     public void testIsLoginExists1() {
@@ -232,7 +239,7 @@ public class UserServiceTest {
                 entity.getIsAdmin() && entity.getIsBlocked());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testActiveUsers() {
         ActiveUsers.addUser("testLogin");
         userService.logOut(session, "testLogin");

@@ -1,16 +1,19 @@
 package com.petko;
 
 import com.petko.dao.ISeminarDao;
-import com.petko.dao.SeminarDao;
+import com.petko.dao.IUserDao;
 import com.petko.entities.SeminarsEntity;
 import com.petko.entities.UsersEntity;
 import com.petko.services.ISeminarService;
-import com.petko.services.SeminarService;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,12 +23,19 @@ import java.util.stream.Collectors;
 import static org.mockito.Mockito.mock;
 
 @Component
+@ContextConfiguration("/testContext.xml")
+@RunWith(SpringJUnit4ClassRunner.class)
+@Transactional
 public class SeminarServiceTest {
-//    public static SeminarService seminarService;
     @Autowired
     public ISeminarDao seminarDao;
     @Autowired
     public ISeminarService seminarService;
+    @Autowired
+    public UserServiceTest userServiceTest;
+    @Autowired
+    public IUserDao userDao;
+
     public static HttpServletRequest request;
     public static ModelMap modelMap;
 
@@ -45,7 +55,7 @@ public class SeminarServiceTest {
         return (int) ids[ids.length - 1];
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testAdd1() {
         seminarService.add(null);
     }
@@ -58,10 +68,8 @@ public class SeminarServiceTest {
         newSeminar.setUsers(new HashSet<>());
         seminarService.add(newSeminar);
         int seminarId = getTheLastSeminarId();
-        UserServiceTest userServiceTest = new UserServiceTest();
-        UserServiceTest.init();
         int userId = userServiceTest.getTheLastUserId();
-        UsersEntity usersEntity = userServiceTest.userDao.getById(userId);
+        UsersEntity usersEntity = userDao.getById(userId);
         String userLogin = usersEntity.getLogin();
         seminarService.subscribeToSeminar(modelMap, userLogin, seminarId);
         seminarService.unSubscribeSeminar(modelMap, userLogin, seminarId);

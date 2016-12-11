@@ -6,12 +6,19 @@ import com.petko.entities.UsersEntity;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 @Component
+@ContextConfiguration("/testContext.xml")
+@RunWith(SpringJUnit4ClassRunner.class)
+@Transactional
 public class UserDaoTest {
     @Autowired
     private IUserDao userDao;
@@ -26,7 +33,7 @@ public class UserDaoTest {
         userDao.save(null);
     }
 
-    @Test (expected = DaoException.class)
+    @Test
     public void testSave2() throws DaoException {
         UsersEntity bookEntity = new UsersEntity();
         userDao.save(bookEntity);

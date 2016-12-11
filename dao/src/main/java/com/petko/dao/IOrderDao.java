@@ -4,7 +4,6 @@ import com.petko.DaoException;
 import com.petko.entities.BooksEntity;
 import com.petko.entities.OrderStatus;
 import com.petko.entities.OrdersEntity;
-import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;

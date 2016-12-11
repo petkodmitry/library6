@@ -8,8 +8,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -27,6 +25,7 @@ public class OrderDao extends BaseDao<OrdersEntity> implements IOrderDao {
      * @return List of OrdersEntity considering given options
      * @throws DaoException
      */
+    @Override
     public List<OrdersEntity> getOrdersByLoginAndStatus(String login, OrderStatus orderStatus) throws DaoException {
         List<OrdersEntity> result;
         try {
@@ -64,6 +63,7 @@ public class OrderDao extends BaseDao<OrdersEntity> implements IOrderDao {
      * @return List of OrdersEntity considering given options
      * @throws DaoException
      */
+    @Override
     public List<OrdersEntity> getOrdersByStatusAndEndDate(OrderStatus orderStatus, Date endDate) throws DaoException {
         List<OrdersEntity> result;
         try {
@@ -93,6 +93,7 @@ public class OrderDao extends BaseDao<OrdersEntity> implements IOrderDao {
      * @return List of OrdersEntity considering given options
      * @throws DaoException
      */
+    @Override
     public List<OrdersEntity> getOrdersByLoginBookIdStatuses(String login, BooksEntity bookEntity, String[] orderStatuses) throws DaoException {
         List<OrdersEntity> result;
         try {

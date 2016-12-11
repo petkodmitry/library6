@@ -1,18 +1,15 @@
 package com.petko.entities;
 
 import org.hibernate.annotations.*;
-import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
-//import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 @javax.persistence.Entity
-//@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "seminars")
 public class SeminarsEntity extends Entity {
     private int seminarId;

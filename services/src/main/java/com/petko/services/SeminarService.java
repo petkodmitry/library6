@@ -6,16 +6,12 @@ import com.petko.dao.ISeminarDao;
 import com.petko.dao.IUserDao;
 import com.petko.entities.SeminarsEntity;
 import com.petko.entities.UsersEntity;
-import com.petko.utils.HibernateUtilLibrary;
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @Service
@@ -39,7 +35,6 @@ public class SeminarService implements ISeminarService {
             result = seminarDao.getSeminarsByLogin(login);
             log.info("Get seminars by login (commit)");
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
         }
         return result;
     }
@@ -64,7 +59,6 @@ public class SeminarService implements ISeminarService {
             log.info("Get user by login (commit)");
             log.info("Get seminar by id (commit)");
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
         }
     }
 
@@ -88,7 +82,6 @@ public class SeminarService implements ISeminarService {
             log.info("Get user by login (commit)");
             log.info("Get seminar by id (commit)");
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
         }
     }
 
@@ -107,7 +100,6 @@ public class SeminarService implements ISeminarService {
             log.info("Get all seminars >= today (commit)");
             log.info("Get seminars by login (commit)");
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
         }
         return result;
     }
@@ -121,7 +113,6 @@ public class SeminarService implements ISeminarService {
             result = seminarDao.getAll();
             log.info("Get all seminars >= today (commit)");
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
         }
         return result;
     }
@@ -137,7 +128,6 @@ public class SeminarService implements ISeminarService {
             seminarDao.save(entity);
             log.info("Add seminar to DB (commit)");
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
         }
     }
 
@@ -160,7 +150,6 @@ public class SeminarService implements ISeminarService {
             log.info("Get seminar by id (commit)");
             log.info("Delete seminar from DB (commit)");
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
         }
     }
 
@@ -177,7 +166,6 @@ public class SeminarService implements ISeminarService {
             result = seminarDao.getById(id);
             log.info("Get seminar by id (commit)");
         } catch (DaoException e) {
-//            ExceptionsHandler.processException(request, e);
         }
         return result;
     }

@@ -3,7 +3,6 @@ package com.petko.services;
 import com.petko.entities.SeminarsEntity;
 import org.springframework.ui.ModelMap;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface ISeminarService {
