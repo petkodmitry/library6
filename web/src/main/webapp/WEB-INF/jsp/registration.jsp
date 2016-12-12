@@ -2,6 +2,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/xml" prefix="x" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="s" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%@ page errorPage="error.jsp" %>
@@ -10,14 +12,17 @@
 </head>
 <body><H3>Заполните регистрационную форму:</H3>
 <HR>
-<FORM name="registerForm"
-      method="POST"
-      action="">
+<%--<FORM name="registerForm"--%>
+<s:form name="registerForm"
+        method="POST"
+        modelAttribute="regData"
+        action="">
     <table border="0">
         <tr>
             <td align="right">Логин:</td>
             <td><INPUT type="text"
-                       name="newLogin"
+                       <%--name="newLogin"--%>
+                       name="login"
                        title="Придумайте оригинальный логин"
                        value="${regData.getLogin()}"></td>
             <td>
@@ -34,7 +39,8 @@
         <tr>
             <td align="right">Имя:</td>
             <td><INPUT type="text"
-                       name="newName"
+                       <%--name="newName"--%>
+                       name="firstName"
                        title="Имя"
                        value="${regData.getFirstName()}"></td>
             <td></td>
@@ -42,7 +48,8 @@
         <tr>
             <td align="right">Фамилия:</td>
             <td><INPUT type="text"
-                       name="newLastName"
+                       <%--name="newLastName"--%>
+                       name="lastName"
                        title="Фамилия"
                        value="${regData.getLastName()}"></td>
             <td></td>
@@ -50,7 +57,8 @@
         <tr>
             <td align="right">Пароль:</td>
             <td><INPUT type="password"
-                       name="newPassword"
+                       <%--name="newPassword"--%>
+                       name="password"
                        title="Пароль не менее 8 символов"
                        value=""></td>
             <td></td>
@@ -69,12 +77,15 @@
                     <BUTTON tabindex="-1" type="submit" formaction="login" title="Назад">Назад</BUTTON>
                 </form>
             </td>
-            <td align="right"><INPUT type="submit" formaction="register" title="Зарегистрироваться" value="Зарегистрироваться"></td>
+            <td align="right"><INPUT type="submit" formaction="register" title="Зарегистрироваться"
+                                     value="Зарегистрироваться"></td>
             <td></td>
         </tr>
     </table>
     <br>
-</FORM>
+    <%--</form>--%>
+</s:form>
+
 <HR>
 <c:if test="${requestScope['errorMessage'] != null}">
     Ошибка: ${errorMessage}

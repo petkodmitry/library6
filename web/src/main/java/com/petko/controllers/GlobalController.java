@@ -14,10 +14,15 @@ import com.petko.vo.FullOrdersList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -39,20 +44,12 @@ public class GlobalController {
 
     @Autowired
     private ResourceManager resourceManager;
+    @Autowired
+    private CookieLocaleResolver localeResolver;
+//    private ResourceManager resourceManager = new ResourceManager();
 
     @RequestMapping(value = "/login", method = {RequestMethod.POST, RequestMethod.GET})
-    public String login(ModelMap modelMap, HttpSession session, String login, String password){
-//    public String login(ModelMap modelMap, HttpSession session, @Valid UsersEntity usersEntity, BindingResult br){
-        /*String login = allRequestParams.get("login");
-        String password = allRequestParams.get("password");*/
-
-        /*String login = "", password = "";
-        if (!br.hasErrors()) {
-            login = usersEntity.getLogin();
-            password = usersEntity.getPassword();
-        }*/
-
-        // TODO перенести в какой-нибудь отдельный метод, а лучше фильтр
+    public String login(ModelMap modelMap, HttpServletRequest request, HttpSession session, String login, String password) {
         Enumeration<String> attributesNames = session.getAttributeNames();
         while (attributesNames.hasMoreElements()) {
             String attr = attributesNames.nextElement();
@@ -67,212 +64,36 @@ public class GlobalController {
             return redirectToMainPage(login);
         } else {
             if ((modelMap.get(errorMessageAttribute)) == null && login != null && !"".equals(login)) {
-                modelMap.addAttribute(errorMessageAttribute, "Неверный логин или пароль!");
+                String message = convertStringToUtf8Charset(request, "password.wrong");
+                modelMap.addAttribute(errorMessageAttribute, message);
             }
             return resourceManager.getProperty(Constants.PAGE_INDEX);
         }
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public String logout(HttpSession session){
+    public String logout(HttpSession session) {
         String login = (String) session.getAttribute("user");
         userService.logOut(session, login);
         return redirectToLoginPage();
     }
 
-    @RequestMapping(value = "/myBooks", method = RequestMethod.GET)
-    public String myBooks(ModelMap modelMap, HttpSession session){
-        String login = (String) session.getAttribute("user");
-        String page = resourceManager.getProperty(Constants.PAGE_MY_BOOKS);
-        List<FullOrdersList> myBooksList;
-        myBooksList = orderService.getOrdersByLoginAndStatus(login, OrderStatus.ON_HAND);
-//        session.setAttribute("myBooksList", myBooksList);
-        modelMap.addAttribute("myBooksList", myBooksList);
-        return page;
-    }
-
-    @RequestMapping(value = "/prolongOrder", method = RequestMethod.GET)
-    public String prolongOrder(ModelMap modelMap, HttpSession session, String orderId){
-        String login = (String) session.getAttribute("user");
-        try {
-            Integer oId = Integer.parseInt(orderId);
-            orderService.prolongOrder(modelMap, login, oId);
-        } catch (NumberFormatException e) {
-            modelMap.addAttribute(errorMessageAttribute, "Невозможно распознать ID заказа.");
-        }
-        return myBooks(modelMap, session);
-    }
-
-    @RequestMapping(value = "/searchBook", method = {RequestMethod.GET, RequestMethod.POST})
-    public String searchBook(ModelMap modelMap, HttpSession session, String searchTextInBook){
-        String login = (String) session.getAttribute("user");
-        List<BooksEntity> searchBookForUser;
-        // if there is searchTextInBook parameter in request
-        if (searchTextInBook != null && !"".equals(searchTextInBook)) {
-            searchBookForUser = bookService.searchBooksByTitleOrAuthor(searchTextInBook, login);
-            session.setAttribute("searchBookForUser", searchBookForUser);
-        }
-        return resourceManager.getProperty(Constants.PAGE_SEARCH_BOOK_FOR_USER);
-    }
-
-    // mapping for pathVariables which equals "orderTo*"
-    @RequestMapping(value = "/{path:orderTo+[A-Za-z-]+}", method = RequestMethod.GET)
-    public String orderToHome(ModelMap modelMap, HttpSession session, String bookId,
-                              @PathVariable String path){
-        String login = (String) session.getAttribute("user");
-        try {
-            int bId = Integer.parseInt(bookId);
-            if ("orderToHome".equals(path)) orderService.orderToHomeOrToRoom(modelMap, login, bId, true);
-            else if ("orderToReadingRoom".equals(path)) orderService.orderToHomeOrToRoom(modelMap, login, bId, false);
-        } catch (NumberFormatException e) {
-            modelMap.addAttribute(errorMessageAttribute, "Невозможно распознать ID книги.");
-        }
-        return resourceManager.getProperty(Constants.PAGE_SEARCH_BOOK_FOR_USER);
-    }
-    /*@RequestMapping(value = "/{path:orderTo+[A-Za-z-]+}", method = RequestMethod.GET)
-    public ModelAndView orderToHome(ModelMap modelMap, HttpSession session, String bookId,
-                                    @PathVariable String path){
-        ModelAndView modelAndView = new ModelAndView();
-        String login = (String) session.getAttribute("user");
-        try {
-            int bId = Integer.parseInt(bookId);
-            if ("orderToHome".equals(path)) orderService.orderToHomeOrToRoom(modelMap, login, bId, true);
-            else if ("orderToReadingRoom".equals(path)) orderService.orderToHomeOrToRoom(modelMap, login, bId, false);
-        } catch (NumberFormatException e) {
-            modelMap.addAttribute(errorMessageAttribute, "Невозможно распознать ID книги.");
-        }
-        modelAndView.addAllObjects(modelMap);
-        return modelAndView;
-//        return "redirect:" + resourceManager.getProperty(Constants.PAGE_SEARCH_BOOK_FOR_USER);
-    }*/
-
-    @RequestMapping(value = "/myOrders", method = RequestMethod.GET)
-    public String myOrders(ModelMap modelMap, HttpSession session){
-        String login = (String) session.getAttribute("user");
-        List<FullOrdersList> myOrdersList;
-        myOrdersList = orderService.getOrdersByLoginAndStatus(login, OrderStatus.ORDERED);
-        modelMap.addAttribute("myOrdersList", myOrdersList);
-        return resourceManager.getProperty(Constants.PAGE_MY_ORDERS);
-    }
-
-    @RequestMapping(value = "/cancelUserOrder", method = RequestMethod.GET)
-    public String cancelUserOrder(ModelMap modelMap, HttpSession session, String orderId){
-        String login = (String) session.getAttribute("user");
-        try {
-            int oId = Integer.parseInt(orderId);
-            orderService.closeOrder(login, oId);
-        } catch (NumberFormatException e) {
-            modelMap.addAttribute(errorMessageAttribute, "Невозможно распознать ID заказа.");
-        }
-        return myOrders(modelMap, session);
-    }
-
-    @RequestMapping(value = "/mySeminars", method = RequestMethod.GET)
-    public String mySeminars(HttpSession session){
-        String login = (String) session.getAttribute("user");
-        List<SeminarsEntity> mySeminarsList;
-        mySeminarsList = seminarService.getSeminarsByLogin(login);
-        session.setAttribute("mySeminars", mySeminarsList);
-        return resourceManager.getProperty(Constants.PAGE_MY_SEMINARS);
-    }
-
-    @RequestMapping(value = "/unSubscribeSeminar", method = RequestMethod.GET)
-    public String unSubscribeSeminar(ModelMap modelMap, HttpSession session, String seminarId){
-        String login = (String) session.getAttribute("user");
-        try {
-            Integer sId = Integer.parseInt(seminarId);
-            seminarService.unSubscribeSeminar(modelMap, login, sId);
-        } catch (NumberFormatException e) {
-            modelMap.addAttribute(errorMessageAttribute, "Невозможно распознать ID семинара.");
-        }
-        return mySeminars(session);
-    }
-
-    @RequestMapping(value = "/chooseSeminars", method = RequestMethod.GET)
-    public String chooseSeminars(ModelMap modelMap, HttpSession session){
-        String login = (String) session.getAttribute("user");
-        List<SeminarsEntity> availableSeminarsList;
-        availableSeminarsList = seminarService.availableSeminarsForLogin(login);
-        session.setAttribute("availableSeminars", availableSeminarsList);
-        return resourceManager.getProperty(Constants.PAGE_CHOOSE_SEMINARS);
-    }
-
-    @RequestMapping(value = "/subscribeToSeminar", method = RequestMethod.GET)
-    public String subscribeToSeminar(ModelMap modelMap, HttpSession session, String seminarId){
-        String login = (String) session.getAttribute("user");
-        try {
-            Integer sId = Integer.parseInt(seminarId);
-            seminarService.subscribeToSeminar(modelMap, login, sId);
-        } catch (NumberFormatException e) {
-            modelMap.addAttribute(errorMessageAttribute, "Невозможно распознать ID семинара.");
-        }
-        return chooseSeminars(modelMap, session);
-    }
-
-    @RequestMapping(value = "/showUsers", method = {RequestMethod.POST, RequestMethod.GET})
-    public String showUsers(ModelMap modelMap, HttpSession session, String perPage,
-                       @RequestParam(value = "page", required = false) String page,
-                       @RequestParam(value = "sortBy", required = false) String sortBy,
-                       @RequestParam(value = "orderType", required = false) String orderType,
-                       @RequestParam(value = "filterRemove", required = false) String filterRemove,
-                       @RequestParam(value = "filterSet", required = false) String filterSet,
-                       @RequestParam(value = "filterText", required = false) String filterText){
-        String login = (String) session.getAttribute("user");
-        if (userService.isAdminUser(/*request,*/ login)) {
-            HashMap<String, String> filters = (HashMap<String, String>) session.getAttribute("filters");
-            filters = filters == null ? new HashMap<>() : filters;
-            if (filterSet != null && filterText != null && !filterText.equals("")) {
-                filters.put(filterSet, filterText);
-            }
-            if (filterRemove != null) filters.remove(filterRemove);
-            session.setAttribute("filters", filters);
-
-            if (perPage != null) modelMap.addAttribute("perPage", perPage);
-            if (page != null) modelMap.addAttribute("page", page);
-            if (sortBy != null) session.setAttribute("sortBy", sortBy);
-            if (orderType != null) session.setAttribute("orderType", orderType);
-            if (filterRemove != null) modelMap.addAttribute("filterRemove", filterRemove);
-
-            List<UsersEntity> userSet;
-            userSet = userService.getAll(modelMap, session);
-            modelMap.addAttribute("userSet", userSet);
-            return resourceManager.getProperty(Constants.PAGE_SHOW_USERS);
-        } else if ((modelMap.get(errorMessageAttribute)) == null) {
-            modelMap.addAttribute(errorMessageAttribute, "У Вас нет прав для выполнения данной команды.");
-        }
-        return redirectToMainPage(login);
-    }
-
     @RequestMapping(value = "/register", method = {RequestMethod.GET, RequestMethod.POST})
     public String register(ModelMap modelMap, HttpSession session,
-                           @RequestParam(value = "newName", required = false) String newName,
-                           @RequestParam(value = "newLastName", required = false) String newLastName,
-                           @RequestParam(value = "newLogin", required = false) String newLogin,
-                           @RequestParam(value = "newPassword", required = false) String newPassword,
+                           @Valid UsersEntity regData,
                            @RequestParam(value = "repeatPassword", required = false) String repeatPassword
-                           ){
+    ) {
         String login = (String) session.getAttribute("user");
         if (login == null || userService.isAdminUser(login)) {
             String page = resourceManager.getProperty(Constants.PAGE_REGISTRATION);
-            UsersEntity regData;
-            /**
-             * creating attribute of the session: UsersEntity regData
-             */
-            if (session.getAttribute("regData") == null) {
-                regData = new UsersEntity();
-                session.setAttribute("regData", regData);
-            }
-            /**
-             * reading data from session attribute regData
-             */
-            else {
-                regData = (UsersEntity) session.getAttribute("regData");
-                regData = userService.setAllDataOfEntity(regData, newName, newLastName,
-                                                        newLogin, newPassword, false, false);
+            session.setAttribute("regData", regData);
+            if (regData.getFirstName() != null) {
+                regData.setIsAdmin(false);
+                regData.setIsBlocked(false);
                 /**
                  * if 'login' is entered
                  */
-                if (regData.getLogin() != null && !"".equals(regData.getLogin())) {
+                if (!"".equals(regData.getLogin())) {
                     /**
                      * check if asked login exists in database
                      */
@@ -302,8 +123,154 @@ public class GlobalController {
         return redirectToMainPage(login);
     }
 
+    @RequestMapping(value = "/myBooks", method = RequestMethod.GET)
+    public String myBooks(ModelMap modelMap, HttpSession session) {
+        String login = (String) session.getAttribute("user");
+        String page = resourceManager.getProperty(Constants.PAGE_MY_BOOKS);
+        List<FullOrdersList> myBooksList;
+        myBooksList = orderService.getOrdersByLoginAndStatus(login, OrderStatus.ON_HAND);
+        modelMap.addAttribute("myBooksList", myBooksList);
+        return page;
+    }
+
+    @RequestMapping(value = "/prolongOrder", method = RequestMethod.GET)
+    public String prolongOrder(ModelMap modelMap, HttpSession session, String orderId) {
+        String login = (String) session.getAttribute("user");
+        try {
+            Integer oId = Integer.parseInt(orderId);
+            orderService.prolongOrder(modelMap, login, oId);
+        } catch (NumberFormatException e) {
+            modelMap.addAttribute(errorMessageAttribute, "Невозможно распознать ID заказа.");
+        }
+        return myBooks(modelMap, session);
+    }
+
+    @RequestMapping(value = "/searchBook", method = {RequestMethod.GET, RequestMethod.POST})
+    public String searchBook(ModelMap modelMap, HttpSession session, String searchTextInBook) {
+        String login = (String) session.getAttribute("user");
+        List<BooksEntity> searchBookForUser;
+        // if there is searchTextInBook parameter in request
+        if (searchTextInBook != null && !"".equals(searchTextInBook)) {
+            searchBookForUser = bookService.searchBooksByTitleOrAuthor(searchTextInBook, login);
+            session.setAttribute("searchBookForUser", searchBookForUser);
+        }
+        return resourceManager.getProperty(Constants.PAGE_SEARCH_BOOK_FOR_USER);
+    }
+
+    // mapping for pathVariables which equals "orderTo*"
+    @RequestMapping(value = "/{path:orderTo+[A-Za-z-]+}", method = RequestMethod.GET)
+    public String orderToHome(ModelMap modelMap, HttpSession session, String bookId,
+                              @PathVariable String path) {
+        String login = (String) session.getAttribute("user");
+        try {
+            int bId = Integer.parseInt(bookId);
+            if ("orderToHome".equals(path)) orderService.orderToHomeOrToRoom(modelMap, login, bId, true);
+            else if ("orderToReadingRoom".equals(path)) orderService.orderToHomeOrToRoom(modelMap, login, bId, false);
+        } catch (NumberFormatException e) {
+            modelMap.addAttribute(errorMessageAttribute, "Невозможно распознать ID книги.");
+        }
+        return resourceManager.getProperty(Constants.PAGE_SEARCH_BOOK_FOR_USER);
+    }
+
+    @RequestMapping(value = "/myOrders", method = RequestMethod.GET)
+    public String myOrders(ModelMap modelMap, HttpSession session) {
+        String login = (String) session.getAttribute("user");
+        List<FullOrdersList> myOrdersList;
+        myOrdersList = orderService.getOrdersByLoginAndStatus(login, OrderStatus.ORDERED);
+        modelMap.addAttribute("myOrdersList", myOrdersList);
+        return resourceManager.getProperty(Constants.PAGE_MY_ORDERS);
+    }
+
+    @RequestMapping(value = "/cancelUserOrder", method = RequestMethod.GET)
+    public String cancelUserOrder(ModelMap modelMap, HttpSession session, String orderId) {
+        String login = (String) session.getAttribute("user");
+        try {
+            int oId = Integer.parseInt(orderId);
+            orderService.closeOrder(login, oId);
+        } catch (NumberFormatException e) {
+            modelMap.addAttribute(errorMessageAttribute, "Невозможно распознать ID заказа.");
+        }
+        return myOrders(modelMap, session);
+    }
+
+    @RequestMapping(value = "/mySeminars", method = RequestMethod.GET)
+    public String mySeminars(HttpSession session) {
+        String login = (String) session.getAttribute("user");
+        List<SeminarsEntity> mySeminarsList;
+        mySeminarsList = seminarService.getSeminarsByLogin(login);
+        session.setAttribute("mySeminars", mySeminarsList);
+        return resourceManager.getProperty(Constants.PAGE_MY_SEMINARS);
+    }
+
+    @RequestMapping(value = "/unSubscribeSeminar", method = RequestMethod.GET)
+    public String unSubscribeSeminar(ModelMap modelMap, HttpSession session, String seminarId) {
+        String login = (String) session.getAttribute("user");
+        try {
+            Integer sId = Integer.parseInt(seminarId);
+            seminarService.unSubscribeSeminar(modelMap, login, sId);
+        } catch (NumberFormatException e) {
+            modelMap.addAttribute(errorMessageAttribute, "Невозможно распознать ID семинара.");
+        }
+        return mySeminars(session);
+    }
+
+    @RequestMapping(value = "/chooseSeminars", method = RequestMethod.GET)
+    public String chooseSeminars(ModelMap modelMap, HttpSession session) {
+        String login = (String) session.getAttribute("user");
+        List<SeminarsEntity> availableSeminarsList;
+        availableSeminarsList = seminarService.availableSeminarsForLogin(login);
+        session.setAttribute("availableSeminars", availableSeminarsList);
+        return resourceManager.getProperty(Constants.PAGE_CHOOSE_SEMINARS);
+    }
+
+    @RequestMapping(value = "/subscribeToSeminar", method = RequestMethod.GET)
+    public String subscribeToSeminar(ModelMap modelMap, HttpSession session, String seminarId) {
+        String login = (String) session.getAttribute("user");
+        try {
+            Integer sId = Integer.parseInt(seminarId);
+            seminarService.subscribeToSeminar(modelMap, login, sId);
+        } catch (NumberFormatException e) {
+            modelMap.addAttribute(errorMessageAttribute, "Невозможно распознать ID семинара.");
+        }
+        return chooseSeminars(modelMap, session);
+    }
+
+    @RequestMapping(value = "/showUsers", method = {RequestMethod.POST, RequestMethod.GET})
+    public String showUsers(ModelMap modelMap, HttpSession session, String perPage,
+                            @RequestParam(value = "page", required = false) String page,
+                            @RequestParam(value = "sortBy", required = false) String sortBy,
+                            @RequestParam(value = "orderType", required = false) String orderType,
+                            @RequestParam(value = "filterRemove", required = false) String filterRemove,
+                            @RequestParam(value = "filterSet", required = false) String filterSet,
+                            @RequestParam(value = "filterText", required = false) String filterText) {
+        String login = (String) session.getAttribute("user");
+        if (userService.isAdminUser(/*request,*/ login)) {
+            HashMap<String, String> filters = (HashMap<String, String>) session.getAttribute("filters");
+            filters = filters == null ? new HashMap<>() : filters;
+            if (filterSet != null && filterText != null && !filterText.equals("")) {
+                filters.put(filterSet, filterText);
+            }
+            if (filterRemove != null) filters.remove(filterRemove);
+            session.setAttribute("filters", filters);
+
+            if (perPage != null) modelMap.addAttribute("perPage", perPage);
+            if (page != null) modelMap.addAttribute("page", page);
+            if (sortBy != null) session.setAttribute("sortBy", sortBy);
+            if (orderType != null) session.setAttribute("orderType", orderType);
+            if (filterRemove != null) modelMap.addAttribute("filterRemove", filterRemove);
+
+            List<UsersEntity> userSet;
+            userSet = userService.getAll(modelMap, session);
+            modelMap.addAttribute("userSet", userSet);
+            return resourceManager.getProperty(Constants.PAGE_SHOW_USERS);
+        } else if ((modelMap.get(errorMessageAttribute)) == null) {
+            modelMap.addAttribute(errorMessageAttribute, "У Вас нет прав для выполнения данной команды.");
+        }
+        return redirectToMainPage(login);
+    }
+
     @RequestMapping(value = "/openedOrders", method = RequestMethod.GET)
-    public String openedOrders(ModelMap modelMap, HttpSession session){
+    public String openedOrders(ModelMap modelMap, HttpSession session) {
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(login)) {
             List<FullOrdersList> openedOrdersList = orderService.getOrdersByLoginAndStatus(null, OrderStatus.ON_HAND);
@@ -316,7 +283,7 @@ public class GlobalController {
     }
 
     @RequestMapping(value = "/waitingOrders", method = RequestMethod.GET)
-    public String waitingOrders(ModelMap modelMap, HttpSession session){
+    public String waitingOrders(ModelMap modelMap, HttpSession session) {
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(login)) {
             List<FullOrdersList> waitingOrdersList = orderService.getOrdersByLoginAndStatus(null, OrderStatus.ORDERED);
@@ -329,7 +296,7 @@ public class GlobalController {
     }
 
     @RequestMapping(value = "/provideBook", method = RequestMethod.GET)
-    public String provideBook(ModelMap modelMap, HttpSession session, String orderId){
+    public String provideBook(ModelMap modelMap, HttpSession session, String orderId) {
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(login)) {
             try {
@@ -346,7 +313,7 @@ public class GlobalController {
     }
 
     @RequestMapping(value = "/closeOrder", method = RequestMethod.GET)
-    public String closeOrder(ModelMap modelMap, HttpSession session, String orderId){
+    public String closeOrder(ModelMap modelMap, HttpSession session, String orderId) {
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(login)) {
             try {
@@ -368,7 +335,7 @@ public class GlobalController {
     }
 
     @RequestMapping(value = "/expiredOrders", method = RequestMethod.GET)
-    public String expiredOrders(ModelMap modelMap, HttpSession session){
+    public String expiredOrders(ModelMap modelMap, HttpSession session) {
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(login)) {
             List<FullOrdersList> expiredOrdersList = orderService.getExpiredOrders();
@@ -382,7 +349,7 @@ public class GlobalController {
 
     @RequestMapping(value = "/blockUser", method = RequestMethod.GET)
     public String blockUser(ModelMap modelMap, HttpSession session,
-                            @RequestParam(value = "login", required = false) String userLogin){
+                            @RequestParam(value = "login", required = false) String userLogin) {
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(login)) {
             userService.setBlockUser(userLogin, true);
@@ -394,7 +361,7 @@ public class GlobalController {
     }
 
     @RequestMapping(value = "/blacklist", method = RequestMethod.GET)
-    public String blacklist(ModelMap modelMap, HttpSession session){
+    public String blacklist(ModelMap modelMap, HttpSession session) {
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(login)) {
             List<UsersEntity> blackList = userService.getUsersByBlock(true);
@@ -408,7 +375,7 @@ public class GlobalController {
 
     @RequestMapping(value = "/unblockUser", method = RequestMethod.GET)
     public String unblockUser(ModelMap modelMap, HttpSession session,
-                              @RequestParam(value = "login", required = false) String userLogin){
+                              @RequestParam(value = "login", required = false) String userLogin) {
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(login)) {
             userService.setBlockUser(userLogin, false);
@@ -420,7 +387,7 @@ public class GlobalController {
     }
 
     @RequestMapping(value = "/searchBookAdmin", method = {RequestMethod.GET, RequestMethod.POST})
-    public String searchBookAdmin(ModelMap modelMap, HttpSession session, String searchTextInBook){
+    public String searchBookAdmin(ModelMap modelMap, HttpSession session, String searchTextInBook) {
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(login)) {
             if (searchTextInBook != null && !"".equals(searchTextInBook)) {
@@ -435,7 +402,7 @@ public class GlobalController {
     }
 
     @RequestMapping(value = "/addBook", method = {RequestMethod.GET, RequestMethod.POST})
-    public String addBook(ModelMap modelMap, HttpSession session, String newTitle, String newAuthor){
+    public String addBook(ModelMap modelMap, HttpSession session, String newTitle, String newAuthor) {
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(login)) {
             BooksEntity regData = (BooksEntity) session.getAttribute("regData");
@@ -463,7 +430,7 @@ public class GlobalController {
     }
 
     @RequestMapping(value = "/deleteBook", method = RequestMethod.GET)
-    public String deleteBook(ModelMap modelMap, HttpSession session, String bookId){
+    public String deleteBook(ModelMap modelMap, HttpSession session, String bookId) {
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(login)) {
             Integer bId = Integer.parseInt(bookId);
@@ -479,7 +446,7 @@ public class GlobalController {
     }
 
     @RequestMapping(value = "/adminSeminars", method = RequestMethod.GET)
-    public String adminSeminars(ModelMap modelMap, HttpSession session){
+    public String adminSeminars(ModelMap modelMap, HttpSession session) {
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(login)) {
             List<SeminarsEntity> allSeminars = seminarService.getAll();
@@ -492,7 +459,7 @@ public class GlobalController {
     }
 
     @RequestMapping(value = "/addSeminar", method = {RequestMethod.GET, RequestMethod.POST})
-    public String addSeminar(ModelMap modelMap, HttpSession session, String newSubject, String newDate){
+    public String addSeminar(ModelMap modelMap, HttpSession session, String newSubject, String newDate) {
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(login)) {
             SeminarsEntity regData = (SeminarsEntity) session.getAttribute("regData");
@@ -526,7 +493,7 @@ public class GlobalController {
     }
 
     @RequestMapping(value = "/usersOfSeminar", method = RequestMethod.GET)
-    public String usersOfSeminar(ModelMap modelMap, HttpSession session, String seminarId){
+    public String usersOfSeminar(ModelMap modelMap, HttpSession session, String seminarId) {
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(login)) {
             Integer sId = Integer.parseInt(seminarId);
@@ -540,7 +507,7 @@ public class GlobalController {
     }
 
     @RequestMapping(value = "/deleteSeminar", method = RequestMethod.GET)
-    public String deleteSeminar(ModelMap modelMap, HttpSession session, String seminarId){
+    public String deleteSeminar(ModelMap modelMap, HttpSession session, String seminarId) {
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(login)) {
             Integer sId = Integer.parseInt(seminarId);
@@ -556,12 +523,12 @@ public class GlobalController {
     // mapping for Unknown commands
     @RequestMapping(value = "/{path:[0-9А-Яа-яA-Za-z-+_*]+}", method = RequestMethod.GET)
     public String unknown(ModelMap modelMap,
-                          @PathVariable String path){
+                          @PathVariable String path) {
         modelMap.addAttribute(errorMessageAttribute, "Команда не распознана или не задана!");
         return resourceManager.getProperty(Constants.PAGE_ERROR);
     }
 
-    private /*void*/ String redirectToMainPage(String login) {
+    private String redirectToMainPage(String login) {
         String page;
         if (userService.isAdminUser(login)) {
             page = resourceManager.getProperty(Constants.PAGE_MAIN_ADMIN);
@@ -572,7 +539,13 @@ public class GlobalController {
         return page;
     }
 
-    private /*void*/ String redirectToLoginPage() {
+    private String redirectToLoginPage() {
         return resourceManager.getProperty(Constants.PAGE_INDEX);
+    }
+
+    private String convertStringToUtf8Charset(HttpServletRequest request, String bundleKey) {
+        Locale locale = localeResolver.resolveLocale(request);
+        String message = resourceManager.getResourceBundleLocale(locale).getString(bundleKey);
+        return new String(message.getBytes(Charset.forName("ISO-8859-1")), Charset.forName("utf-8"));
     }
 }
