@@ -87,7 +87,7 @@ public class BookService implements IBookService {
      */
     @Override
     @Transactional(readOnly = false, rollbackFor = DaoException.class)
-    public void add(BooksEntity bookEntity) {
+    public void add(BooksEntity bookEntity){
         try {
             bookDao.save(bookEntity);
             log.info("Save book (commit)");

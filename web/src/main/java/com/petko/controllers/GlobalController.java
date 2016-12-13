@@ -28,7 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Controller
-@RequestMapping(value = "/controller")
+@RequestMapping(value = {"/controller", "/"})
 public class GlobalController {
     private final String errorMessageAttribute = Constants.ERROR_MESSAGE_ATTRIBUTE;
     private final String infoMessageAttribute = Constants.INFO_MESSAGE_ATTRIBUTE;
@@ -458,32 +458,34 @@ public class GlobalController {
         return redirectToMainPage(login);
     }
 
-    @RequestMapping(value = "/addSeminar", method = {RequestMethod.GET, RequestMethod.POST})
+
+    @RequestMapping(value = "/addSeminar", method = RequestMethod.GET)
+    public String addSeminar0(ModelMap modelMap) {
+        return resourceManager.getProperty(Constants.PAGE_ADD_SEMINAR);
+    }
+
+    @RequestMapping(value = "/addSeminar", method = RequestMethod.POST)
     public String addSeminar(ModelMap modelMap, HttpSession session, String newSubject, String newDate) {
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(login)) {
-            SeminarsEntity regData = (SeminarsEntity) session.getAttribute("regData");
-            if (regData == null) {
-                regData = new SeminarsEntity();
-                session.setAttribute("regData", regData);
+            Date date = null;
+            if (!"".equals(newDate)) {
+                try {
+                    date = new SimpleDateFormat("yyyy-MM-dd").parse(newDate);
+                } catch (ParseException e) {/*NOP*/}
+            }
+            Date today1 = new Date();
+            Date today = new Date(today1.getYear(), today1.getMonth(), today1.getDate());
+            if (!"".equals(newSubject) && date != null && (today.before(date) || today.equals(date))) {
+                SeminarsEntity entity = new SeminarsEntity();
+                entity.setSubject(newSubject);
+                entity.setSeminarDate(date);
+                seminarService.add(entity);
+                modelMap.addAttribute(infoMessageAttribute, "Новый семинар по теме '" + newSubject + "' успешно добавлен.");
             } else {
-                Date date = null;
-                if (!"".equals(newDate)) {
-                    try {
-                        date = new SimpleDateFormat("yyyy-MM-dd").parse(newDate);
-                    } catch (ParseException e) {/*NOP*/}
-                }
-                Date today1 = new Date();
-                Date today = new Date(today1.getYear(), today1.getMonth(), today1.getDate());
-                if (!"".equals(newSubject) && date != null && (today.before(date) || today.equals(date))) {
-                    regData.setSubject(newSubject);
-                    regData.setSeminarDate(date);
-                    seminarService.add(regData);
-                    modelMap.addAttribute(infoMessageAttribute, "Семинар добавлен в базу.");
-                    session.removeAttribute("regData");
-                } else {
-                    modelMap.addAttribute(errorMessageAttribute, "Поля данных семинара не должны быть пустыми и дата должна быть >= сегодня.");
-                }
+                modelMap.addAttribute("newSubject", newSubject);
+                modelMap.addAttribute("newDate", newDate);
+                modelMap.addAttribute(errorMessageAttribute, "Поля данных семинара не должны быть пустыми и дата должна быть >= сегодня.");
             }
             return resourceManager.getProperty(Constants.PAGE_ADD_SEMINAR);
         } else if ((modelMap.get(errorMessageAttribute)) == null) {

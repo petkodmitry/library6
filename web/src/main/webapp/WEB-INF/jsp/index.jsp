@@ -9,6 +9,8 @@
 <%@ page errorPage="error.jsp" %>
 <HTML>
 <HEAD><TITLE><spring:message code="page.login.title"/></TITLE></HEAD>
+
+
 <BODY><H3><spring:message code="page.login.body.head"/></H3>
 <div style="float: left">
     <a href="login?locale=ru" style="padding: 5px">RU</a>
@@ -40,4 +42,44 @@
     <spring:message code="message.error"/> ${errorMessage}
 </c:if>
 </BODY>
+
+
+<%--<div id="mainWrapper">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-form">
+                <c:url var="loginUrl" value="/login" />
+                <form action="${loginUrl}" method="post" class="form-horizontal">
+                    <c:if test="${param.error != null}">
+                        <div class="alert alert-danger">
+                            <p>Invalid username and password.</p>
+                        </div>
+                    </c:if>
+                    <c:if test="${param.logout != null}">
+                        <div class="alert alert-success">
+                            <p>You have been logged out successfully.</p>
+                        </div>
+                    </c:if>
+                    <div class="input-group input-sm">
+                        <label class="input-group-addon" for="username"><i class="fa fa-user"></i></label>
+                        <input type="text" class="form-control" id="username" name="userName" placeholder="Enter Username" required="required"><jsp:text/></input>
+                    </div>
+                    <div class="input-group input-sm">
+                        <label class="input-group-addon" for="password"><i class="fa fa-lock"></i></label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password" required="required"><jsp:text/></input>
+                    </div>
+                    &lt;%&ndash;<input type="hidden" name="${_csrf.parameterName}"  value="${_csrf.token}"><jsp:text/></input>&ndash;%&gt;
+                    <input type="hidden" name="${_csrf.parameterName}"  value="${_csrf.token}"/><jsp:text/></input>
+
+                    <div class="form-actions">
+                        <input type="submit"
+                               class="btn btn-block btn-primary btn-default" value="Log in"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>--%>
+
+
 </HTML>

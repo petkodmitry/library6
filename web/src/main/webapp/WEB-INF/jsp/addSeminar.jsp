@@ -19,14 +19,16 @@
             <td><INPUT type="text"
                        name="newSubject"
                        title="Введите тему семинара"
-                       value="${regData.getSubject()}"></td>
+                       <%--value="${regData.getSubject()}"></td>--%>
+                       value="${newSubject}"></td>
         </tr>
         <tr>
             <td align="right">Дата семинара:</td>
             <td><INPUT type="date"
                        name="newDate"
                        title="Введите дату семинара"
-                       value="${regData.getSeminarDate()}"></td>
+                       <%--value="${regData.getSeminarDate()}"></td>--%>
+                       value="${newDate}"></td>
         </tr>
         <tr style="height: 25px">
             <td>
