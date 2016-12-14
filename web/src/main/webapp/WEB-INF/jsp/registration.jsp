@@ -12,7 +12,6 @@
 </head>
 <body><H3>Заполните регистрационную форму:</H3>
 <HR>
-<%--<FORM name="registerForm"--%>
 <s:form name="registerForm"
         method="POST"
         modelAttribute="regData"
@@ -21,7 +20,6 @@
         <tr>
             <td align="right">Логин:</td>
             <td><INPUT type="text"
-                       <%--name="newLogin"--%>
                        name="login"
                        title="Придумайте оригинальный логин"
                        value="${regData.getLogin()}"></td>
@@ -39,7 +37,6 @@
         <tr>
             <td align="right">Имя:</td>
             <td><INPUT type="text"
-                       <%--name="newName"--%>
                        name="firstName"
                        title="Имя"
                        value="${regData.getFirstName()}"></td>
@@ -48,7 +45,6 @@
         <tr>
             <td align="right">Фамилия:</td>
             <td><INPUT type="text"
-                       <%--name="newLastName"--%>
                        name="lastName"
                        title="Фамилия"
                        value="${regData.getLastName()}"></td>
@@ -57,7 +53,6 @@
         <tr>
             <td align="right">Пароль:</td>
             <td><INPUT type="password"
-                       <%--name="newPassword"--%>
                        name="password"
                        title="Пароль не менее 8 символов"
                        value=""></td>
@@ -73,8 +68,8 @@
         </tr>
         <tr style="height: 25px">
             <td>
-                <form method="post" action="">
-                    <BUTTON tabindex="-1" type="submit" formaction="login" title="Назад">Назад</BUTTON>
+                <form method="get" action="login">
+                    <BUTTON tabindex="-1" type="submit" title="Назад">Назад</BUTTON>
                 </form>
             </td>
             <td align="right"><INPUT type="submit" formaction="register" title="Зарегистрироваться"
@@ -83,7 +78,6 @@
         </tr>
     </table>
     <br>
-    <%--</form>--%>
 </s:form>
 
 <HR>

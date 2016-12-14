@@ -183,7 +183,7 @@
                         &nbsp;&nbsp;&nbsp;&nbsp;${page2}
                     </c:when>
                     <c:otherwise>
-                        &nbsp;&nbsp;&nbsp;<a href="showUsers?page=${page1}"> ${page2} </a>
+                        &nbsp;&nbsp;&nbsp;<a methods="POST" href="showUsers?page=${page1}"> ${page2} </a>
                     </c:otherwise>
                 </c:choose>
             </c:when>

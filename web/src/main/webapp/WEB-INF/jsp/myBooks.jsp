@@ -43,6 +43,8 @@
     </form>
 </c:if>
 
+<BR><a href="myOrders">Мои заказы в очереди</a>
+<BR><a href="searchBook">Поиск и заказ книг</a><BR>
 <BR><a href="login">На главную</a>
 <BR><BR><c:if test="${requestScope['errorMessage'] != null}">
     Ошибка: ${errorMessage}

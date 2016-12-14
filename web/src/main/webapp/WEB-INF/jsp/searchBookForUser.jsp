@@ -60,6 +60,7 @@
 </c:if>
 
 <BR><a href="myOrders">Мои заказы в очереди</a>
+<BR><a href="myBooks">Мои книги</a><BR>
 <BR><a href="login">На главную</a>
 <c:if test="${requestScope['info'] != null}">
     <BR><BR>${info}<BR>

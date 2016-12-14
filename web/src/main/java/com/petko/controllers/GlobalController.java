@@ -46,24 +46,28 @@ public class GlobalController {
     private ResourceManager resourceManager;
     @Autowired
     private CookieLocaleResolver localeResolver;
-//    private ResourceManager resourceManager = new ResourceManager();
 
-    @RequestMapping(value = "/login", method = {RequestMethod.POST, RequestMethod.GET})
-    public String login(ModelMap modelMap, HttpServletRequest request, HttpSession session, String login, String password) {
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public String login0(ModelMap modelMap, HttpSession session) {
         Enumeration<String> attributesNames = session.getAttributeNames();
         while (attributesNames.hasMoreElements()) {
             String attr = attributesNames.nextElement();
             if (!"user".equals(attr)) session.removeAttribute(attr);
         }
-
-        if (session.getAttribute("user") != null) {
-            login = (String) session.getAttribute("user");
+        String login = (String) session.getAttribute("user");
+        if (login != null) {
             return redirectToMainPage(login);
-        } else if (!"".equals(login) && userService.isLoginSuccess(login, password)) {
+        }
+        else return resourceManager.getProperty(Constants.PAGE_INDEX);
+    }
+
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public String login(ModelMap modelMap, HttpServletRequest request, HttpSession session, String login, String password) {
+        if (!"".equals(login) && userService.isLoginSuccess(login, password)) {
             session.setAttribute("user", login);
             return redirectToMainPage(login);
         } else {
-            if ((modelMap.get(errorMessageAttribute)) == null && login != null && !"".equals(login)) {
+            if ((modelMap.get(errorMessageAttribute)) == null) {
                 String message = convertStringToUtf8Charset(request, "password.wrong");
                 modelMap.addAttribute(errorMessageAttribute, message);
             }
@@ -78,18 +82,24 @@ public class GlobalController {
         return redirectToLoginPage();
     }
 
-    @RequestMapping(value = "/register", method = {RequestMethod.GET, RequestMethod.POST})
-    public String register(ModelMap modelMap, HttpSession session,
-                           @Valid UsersEntity regData,
-                           @RequestParam(value = "repeatPassword", required = false) String repeatPassword
-    ) {
+    @RequestMapping(value = "/register", method = RequestMethod.GET)
+    public String register0(ModelMap modelMap, HttpSession session) {
         String login = (String) session.getAttribute("user");
         if (login == null || userService.isAdminUser(login)) {
-            String page = resourceManager.getProperty(Constants.PAGE_REGISTRATION);
-            session.setAttribute("regData", regData);
-            if (regData.getFirstName() != null) {
-                regData.setIsAdmin(false);
-                regData.setIsBlocked(false);
+            return resourceManager.getProperty(Constants.PAGE_REGISTRATION);
+        } else {
+            if ((modelMap.get(errorMessageAttribute)) == null) {
+                modelMap.addAttribute(errorMessageAttribute, "У Вас нет прав для выполнения данной команды.");
+            }
+            return redirectToMainPage(login);
+        }
+    }
+
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    public String register(ModelMap modelMap, HttpSession session, @Valid UsersEntity regData,
+                           @RequestParam(value = "repeatPassword", required = false) String repeatPassword
+    ) {
+        session.setAttribute("regData", regData);
                 /**
                  * if 'login' is entered
                  */
@@ -108,19 +118,14 @@ public class GlobalController {
                             if (userService.isAllPasswordRulesFollowed(regData.getPassword(), repeatPassword)) {
                                 userService.add(regData);
                                 session.removeAttribute("regData");
-                                page = resourceManager.getProperty(Constants.PAGE_REGISTRATION_OK);
+                                return resourceManager.getProperty(Constants.PAGE_REGISTRATION_OK);
                             } else {
                                 modelMap.addAttribute(errorMessageAttribute, "Пароль должен содержать не менее 8 символов.");
                             }
                         }
                     }
                 }
-            }
-            return page;
-        } else if ((modelMap.get(errorMessageAttribute)) == null) {
-            modelMap.addAttribute(errorMessageAttribute, "У Вас нет прав для выполнения данной команды.");
-        }
-        return redirectToMainPage(login);
+        return resourceManager.getProperty(Constants.PAGE_REGISTRATION);
     }
 
     @RequestMapping(value = "/myBooks", method = RequestMethod.GET)
@@ -145,13 +150,18 @@ public class GlobalController {
         return myBooks(modelMap, session);
     }
 
-    @RequestMapping(value = "/searchBook", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/searchBook", method = RequestMethod.GET)
+    public String searchBook0(ModelMap modelMap) {
+        return resourceManager.getProperty(Constants.PAGE_SEARCH_BOOK_FOR_USER);
+    }
+
+    @RequestMapping(value = "/searchBook", method = RequestMethod.POST)
     public String searchBook(ModelMap modelMap, HttpSession session, String searchTextInBook) {
         String login = (String) session.getAttribute("user");
         List<BooksEntity> searchBookForUser;
-        // if there is searchTextInBook parameter in request
-        if (searchTextInBook != null && !"".equals(searchTextInBook)) {
+        if (!"".equals(searchTextInBook)) {
             searchBookForUser = bookService.searchBooksByTitleOrAuthor(searchTextInBook, login);
+            if (searchBookForUser.isEmpty()) modelMap.addAttribute(infoMessageAttribute, "По Вашему запросу ничего не найдено.");
             session.setAttribute("searchBookForUser", searchBookForUser);
         }
         return resourceManager.getProperty(Constants.PAGE_SEARCH_BOOK_FOR_USER);
@@ -235,38 +245,45 @@ public class GlobalController {
         return chooseSeminars(modelMap, session);
     }
 
-    @RequestMapping(value = "/showUsers", method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(value = "/showUsers", method = RequestMethod.GET)
+    public String showUsers0(ModelMap modelMap, HttpSession session,
+                             @RequestParam(value = "page", required = false) String page,
+                             @RequestParam(value = "sortBy", required = false) String sortBy,
+                             @RequestParam(value = "orderType", required = false) String orderType,
+                             @RequestParam(value = "filterRemove", required = false) String filterRemove) {
+        String login = (String) session.getAttribute("user");
+        if (!userService.isAdminUser(login)) {
+            if ((modelMap.get(errorMessageAttribute)) == null) {
+                modelMap.addAttribute(errorMessageAttribute, "У Вас нет прав для выполнения данной команды.");
+            }
+            return redirectToMainPage(login);
+        }
+        HashMap<String, String> filters = (HashMap<String, String>) session.getAttribute("filters");
+        filters = filters == null ? new HashMap<>() : filters;
+        if (page != null) modelMap.addAttribute("page", page);
+        if (sortBy != null) session.setAttribute("sortBy", sortBy);
+        if (orderType != null) session.setAttribute("orderType", orderType);
+        if (filterRemove != null) modelMap.addAttribute("filterRemove", filterRemove);
+//        filters = null;               // для тестов по ловле Exception @ExceptionHandler'ом
+        if (filterRemove != null) filters.remove(filterRemove);
+        session.setAttribute("filters", filters);
+        modelMap.addAttribute("userSet", userService.getAll(modelMap, session));
+        return resourceManager.getProperty(Constants.PAGE_SHOW_USERS);
+    }
+
+    @RequestMapping(value = "/showUsers", method = RequestMethod.POST)
     public String showUsers(ModelMap modelMap, HttpSession session, String perPage,
                             @RequestParam(value = "page", required = false) String page,
-                            @RequestParam(value = "sortBy", required = false) String sortBy,
-                            @RequestParam(value = "orderType", required = false) String orderType,
-                            @RequestParam(value = "filterRemove", required = false) String filterRemove,
                             @RequestParam(value = "filterSet", required = false) String filterSet,
                             @RequestParam(value = "filterText", required = false) String filterText) {
-        String login = (String) session.getAttribute("user");
-        if (userService.isAdminUser(/*request,*/ login)) {
             HashMap<String, String> filters = (HashMap<String, String>) session.getAttribute("filters");
-            filters = filters == null ? new HashMap<>() : filters;
             if (filterSet != null && filterText != null && !filterText.equals("")) {
                 filters.put(filterSet, filterText);
             }
-            if (filterRemove != null) filters.remove(filterRemove);
-            session.setAttribute("filters", filters);
-
             if (perPage != null) modelMap.addAttribute("perPage", perPage);
             if (page != null) modelMap.addAttribute("page", page);
-            if (sortBy != null) session.setAttribute("sortBy", sortBy);
-            if (orderType != null) session.setAttribute("orderType", orderType);
-            if (filterRemove != null) modelMap.addAttribute("filterRemove", filterRemove);
-
-            List<UsersEntity> userSet;
-            userSet = userService.getAll(modelMap, session);
-            modelMap.addAttribute("userSet", userSet);
+            modelMap.addAttribute("userSet", userService.getAll(modelMap, session));
             return resourceManager.getProperty(Constants.PAGE_SHOW_USERS);
-        } else if ((modelMap.get(errorMessageAttribute)) == null) {
-            modelMap.addAttribute(errorMessageAttribute, "У Вас нет прав для выполнения данной команды.");
-        }
-        return redirectToMainPage(login);
     }
 
     @RequestMapping(value = "/openedOrders", method = RequestMethod.GET)
@@ -386,25 +403,44 @@ public class GlobalController {
         return redirectToMainPage(login);
     }
 
-    @RequestMapping(value = "/searchBookAdmin", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/searchBookAdmin", method = RequestMethod.GET)
+    public String searchBookAdmin0(ModelMap modelMap, HttpSession session) {
+        String login = (String) session.getAttribute("user");
+        if (!userService.isAdminUser(login)) {
+            if ((modelMap.get(errorMessageAttribute)) == null) {
+                modelMap.addAttribute(errorMessageAttribute, "У Вас нет прав для выполнения данной команды.");
+            }
+            return redirectToMainPage(login);
+        }
+        return resourceManager.getProperty(Constants.PAGE_SEARCH_BOOK_ADMIN);
+    }
+
+    @RequestMapping(value = "/searchBookAdmin", method = RequestMethod.POST)
     public String searchBookAdmin(ModelMap modelMap, HttpSession session, String searchTextInBook) {
         String login = (String) session.getAttribute("user");
-        if (userService.isAdminUser(login)) {
-            if (searchTextInBook != null && !"".equals(searchTextInBook)) {
+            if (!"".equals(searchTextInBook)) {
                 List<BooksEntity> searchBookAdmin = bookService.searchBooksByTitleOrAuthor(searchTextInBook, login);
+                if (searchBookAdmin.isEmpty()) modelMap.addAttribute(infoMessageAttribute, "По Вашему запросу ничего не найдено.");
                 session.setAttribute("searchBookAdmin", searchBookAdmin);
             }
             return resourceManager.getProperty(Constants.PAGE_SEARCH_BOOK_ADMIN);
-        } else if ((modelMap.get(errorMessageAttribute)) == null) {
-            modelMap.addAttribute(errorMessageAttribute, "У Вас нет прав для выполнения данной команды.");
-        }
-        return redirectToMainPage(login);
     }
 
-    @RequestMapping(value = "/addBook", method = {RequestMethod.GET, RequestMethod.POST})
-    public String addBook(ModelMap modelMap, HttpSession session, String newTitle, String newAuthor) {
+    @RequestMapping(value = "/addBook", method = RequestMethod.GET)
+    public String addBook0(ModelMap modelMap, HttpSession session) {
         String login = (String) session.getAttribute("user");
-        if (userService.isAdminUser(login)) {
+        if (!userService.isAdminUser(login)) {
+            if ((modelMap.get(errorMessageAttribute)) == null) {
+                modelMap.addAttribute(errorMessageAttribute, "У Вас нет прав для выполнения данной команды.");
+            }
+            return redirectToMainPage(login);
+        }
+        session.setAttribute("regData", new BooksEntity());
+        return resourceManager.getProperty(Constants.PAGE_ADD_BOOK);
+    }
+
+    @RequestMapping(value = "/addBook", method = RequestMethod.POST)
+    public String addBook(ModelMap modelMap, HttpSession session, String newTitle, String newAuthor) {
             BooksEntity regData = (BooksEntity) session.getAttribute("regData");
             if (regData == null) {
                 regData = new BooksEntity();
@@ -412,21 +448,15 @@ public class GlobalController {
             } else {
                 regData.setTitle(newTitle);
                 regData.setAuthor(newAuthor);
-                if (newTitle != null && newAuthor != null && !"".equals(newTitle) && !"".equals(newAuthor)) {
+                if (!"".equals(newTitle) && !"".equals(newAuthor)) {
                     regData.setIsBusy(false);
                     bookService.add(regData);
-                    modelMap.addAttribute(infoMessageAttribute, "Книга добавлена в базу библиотеки.");
+                    modelMap.addAttribute(infoMessageAttribute, "Книга '" + newTitle + "' автора '" + newAuthor + "' добавлена в базу библиотеки.");
                     regData.setTitle("");
                     regData.setAuthor("");
-                } else if (newTitle != null && newAuthor != null) {
-                    modelMap.addAttribute(errorMessageAttribute, "Поля данных книги не должны быть пустыми.");
-                }
+                } else modelMap.addAttribute(errorMessageAttribute, "Поля данных книги не должны быть пустыми.");
             }
             return resourceManager.getProperty(Constants.PAGE_ADD_BOOK);
-        } else if ((modelMap.get(errorMessageAttribute)) == null) {
-            modelMap.addAttribute(errorMessageAttribute, "У Вас нет прав для выполнения данной команды.");
-        }
-        return redirectToMainPage(login);
     }
 
     @RequestMapping(value = "/deleteBook", method = RequestMethod.GET)
@@ -537,7 +567,6 @@ public class GlobalController {
         } else {
             page = resourceManager.getProperty(Constants.PAGE_MAIN);
         }
-//        setForwardPage(page);
         return page;
     }
 
