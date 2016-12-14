@@ -12,6 +12,8 @@ import com.petko.services.ISeminarService;
 import com.petko.services.IUserService;
 import com.petko.vo.FullOrdersList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -264,7 +266,7 @@ public class GlobalController {
         if (sortBy != null) session.setAttribute("sortBy", sortBy);
         if (orderType != null) session.setAttribute("orderType", orderType);
         if (filterRemove != null) modelMap.addAttribute("filterRemove", filterRemove);
-//        filters = null;               // для тестов по ловле Exception @ExceptionHandler'ом
+        filters = null;               // для тестов по ловле Exception @ExceptionHandler'ом
         if (filterRemove != null) filters.remove(filterRemove);
         session.setAttribute("filters", filters);
         modelMap.addAttribute("userSet", userService.getAll(modelMap, session));
@@ -377,7 +379,7 @@ public class GlobalController {
         return redirectToMainPage(login);
     }
 
-    @RequestMapping(value = "/blacklist", method = RequestMethod.GET)
+    /*@RequestMapping(value = "/blacklist", method = RequestMethod.GET)
     public String blacklist(ModelMap modelMap, HttpSession session) {
         String login = (String) session.getAttribute("user");
         if (userService.isAdminUser(login)) {
@@ -388,6 +390,32 @@ public class GlobalController {
             modelMap.addAttribute(errorMessageAttribute, "У Вас нет прав для выполнения данной команды.");
         }
         return redirectToMainPage(login);
+    }*/
+
+    @RequestMapping(value = "/blacklist", method = RequestMethod.GET)
+    public String blacklist(ModelMap modelMap, HttpSession session) {
+        String login = (String) session.getAttribute("user");
+        String ligon = getPrincipal();
+        if (userService.isAdminUser(login)) {
+            List<UsersEntity> blackList = userService.getUsersByBlock(true);
+            session.setAttribute("blackList", blackList);
+            return resourceManager.getProperty(Constants.PAGE_BLACK_LIST);
+        } else if ((modelMap.get(errorMessageAttribute)) == null) {
+            modelMap.addAttribute(errorMessageAttribute, "У Вас нет прав для выполнения данной команды.");
+        }
+        return redirectToMainPage(login);
+    }
+
+    private String getPrincipal(){
+        String userName;
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof UserDetails) {
+            userName = ((UserDetails)principal).getUsername();
+        } else {
+            userName = principal.toString();
+        }
+        return userName;
     }
 
     @RequestMapping(value = "/unblockUser", method = RequestMethod.GET)
@@ -578,5 +606,21 @@ public class GlobalController {
         Locale locale = localeResolver.resolveLocale(request);
         String message = resourceManager.getResourceBundleLocale(locale).getString(bundleKey);
         return new String(message.getBytes(Charset.forName("ISO-8859-1")), Charset.forName("utf-8"));
+    }
+
+    /*@ExceptionHandler(Exception.class)
+    public ModelAndView handleAllException(Exception ex) {
+        ModelAndView model = new ModelAndView("error");
+        model.addObject(errorMessageAttribute, ex.getClass().getSimpleName() +
+                (ex.getLocalizedMessage() == null ? "" : ": " + ex.getLocalizedMessage()));
+        return model;
+    }*/
+
+    @ExceptionHandler(Exception.class)
+    public String handleAllExceptions(ModelMap modelMap, Exception ex) {
+//        ModelAndView model = new ModelAndView("error");
+        modelMap.addAttribute(errorMessageAttribute, ex.getClass().getSimpleName() +
+                (ex.getLocalizedMessage() == null ? "" : ": " + ex.getLocalizedMessage()));
+        return "error";
     }
 }

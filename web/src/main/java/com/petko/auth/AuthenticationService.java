@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-//@Service("authService")
-@Service
+@Service("authService")
+//@Service
 public class AuthenticationService implements UserDetailsService {
 
     @Autowired

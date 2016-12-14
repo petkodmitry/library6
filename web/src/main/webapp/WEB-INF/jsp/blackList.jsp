@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/xml" prefix="x" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%@ page errorPage="error.jsp" %>
@@ -9,7 +10,10 @@
 <head>
     <title>Черный список</title>
 </head>
-<body><H3>Черный список</H3>
+<body>
+<sec:authorize access="hasRole('true')">
+    <%--Dear <strong>${user}</strong>, Welcome to Admin Page.--%>
+<H3>Черный список</H3>
 <HR>
 
 <c:if test="${blackList != null && !blackList.isEmpty()}">
@@ -34,6 +38,7 @@
     </table>
 </form>
 </c:if>
+</sec:authorize>
 
 <BR><a href="login">На главную</a>
 <BR><BR><c:if test="${requestScope['errorMessage'] != null}">

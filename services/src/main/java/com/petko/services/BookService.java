@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.*;
 
@@ -25,7 +26,7 @@ public class BookService implements IBookService {
      */
     @Override
     @Transactional(readOnly = true, rollbackFor = DaoException.class)
-    public List<BooksEntity> searchBooksByTitleOrAuthor(String searchTextInBook, String login) {
+    public List<BooksEntity> searchBooksByTitleOrAuthor(String searchTextInBook, String login) /*throws DaoException*/{
         List<BooksEntity> result;
         boolean isUserAdmin = userService.isAdminUser(login);
         try {
